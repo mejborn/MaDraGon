@@ -13,8 +13,8 @@ type System.Random with
     member this.GetValues(minValue, maxValue) =
         Seq.initInfinite (fun _ -> this.Next(minValue, maxValue))
 
-let N = 5
-let k = 10
+let N = 4
+let k = 30
 let rnd = System.Random()
 
 let ScrambleMap (S : Matrix<double>) =
@@ -42,7 +42,7 @@ let rec loop (M : Matrix<double>) (S : Matrix<double>) =
     printfn "Calculating using SA. Please Wait."
     
     let SimulatedAnnealingResult = EvolutionaryAlgoritms.SimulatedAnnealing.run M S
-  
+
     let SimulatedAnnealingChart = 
         [ for x in 0..SimulatedAnnealingResult.Length-1 -> (x,SimulatedAnnealingResult.Item(x))]
         |> Chart.Line |> Chart.WithYAxis(Title="Fitness as a function of iterations - Simulated Annealing")
@@ -60,4 +60,4 @@ let InitializeMap =
 [<EntryPoint>]
 let main argv = 
     InitializeMap
-    0 // return an doubleeger exit code   
+    0  

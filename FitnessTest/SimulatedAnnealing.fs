@@ -13,8 +13,8 @@ module public SimulatedAnnealing =
 
     let rnd = System.Random()
     let Temperature = 100.0
-    let MinTemp = 0.0001
-    let Cooling = 0.001
+    let MinTemp = 0.00001
+    let Cooling = 0.01
     let lambda = Constants.E
     
     let rec loop (original : Matrix<double>) solution temperature (fitnessList : List<double>) =
@@ -23,7 +23,10 @@ module public SimulatedAnnealing =
         //Calculate current solutions fitness:
         let Fitness = FitTest.doFitTest original solution
         
-        //Generate random sollution:
+        //Display progress in console
+        printfn "Current temperature: %A \nMin temperature    : %A \nCurrent fitness    : %A \n" temperature MinTemp Fitness
+
+        //Generate random solution:
         let k = Poisson.Sample(lambda)
         
         let NewSolution =
@@ -55,8 +58,9 @@ module public SimulatedAnnealing =
                 0.25
             else
                 Constants.E ** ((Fitness-NewFitness)/temperature)
-        
+
         if NewFitness = 0.0 then
+            printfn "%A %A" original NewSolution
             NewFitnessList
         else if(rnd.NextDouble() <= AcceptanceProbability && temperature > MinTemp) then
             loop original NewSolution NewTemperature NewFitnessList
@@ -64,6 +68,7 @@ module public SimulatedAnnealing =
         else if (temperature > MinTemp) then
             loop original solution NewTemperature fitnessList
         else
+            printfn "%A %A" original solution
             fitnessList
 
     let run original solution =
