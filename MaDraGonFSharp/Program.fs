@@ -3,6 +3,7 @@ open FSharp.Charting
 open FSharp.Charting.ChartTypes
 open MathNet.Numerics
 open MathNet.Numerics.LinearAlgebra
+open FSharp.Collections.ParallelSeq
 open System.Drawing
 open ToolBox
 open MoveMent
@@ -13,11 +14,9 @@ type System.Random with
     member this.GetValues(minValue, maxValue) =
         Seq.initInfinite (fun _ -> this.Next(minValue, maxValue))
 
-let N = 4
-let k = 30
 let rnd = System.Random()
 
-let ScrambleMap (S : Matrix<double>) =
+let ScrambleMap (S : Matrix<double>) N k =
     let directions = 
         rnd.GetValues(0,3)
         |> Seq.take k
@@ -34,30 +33,39 @@ let ScrambleMap (S : Matrix<double>) =
     
     Seq.fold (fun M move -> (MoveMent.MakeMove M move)) S moves
 
-//Main program loop
-let rec loop (M : Matrix<double>) (S : Matrix<double>) =
-    printfn "%A" M
-    printfn "%A" S
-
-    printfn "Calculating using SA. Please Wait."
-    
-    let SimulatedAnnealingResult = EvolutionaryAlgoritms.SimulatedAnnealing.run M S
-
-    let SimulatedAnnealingChart = 
-        [ for x in 0..SimulatedAnnealingResult.Length-1 -> (x,SimulatedAnnealingResult.Item(x))]
-        |> Chart.Line |> Chart.WithYAxis(Title="Fitness as a function of iterations - Simulated Annealing")
-    let SimulatedAnnealingChartControl = new ChartControl(SimulatedAnnealingChart, Dock=DockStyle.Fill)
-
-    let form = new Form(Visible = true, TopMost = true, Width = 700, Height = 500)
-    form.Controls.Add(SimulatedAnnealingChartControl)
-    do Application.Run(form) |> ignore
-
-let InitializeMap =
-    let M : Matrix<double> = DenseMatrix.init N N (fun i j -> double ((i+j) % 2))
-    let S = ScrambleMap M
-    loop M S
-
 [<EntryPoint>]
 let main argv = 
-    InitializeMap
+    let N = 5
+    let k = 30
+    let cooling = 0.01
+    let maxIterations = 10000
+    let mutable charts = []
+    let form = new Form(Visible = true, TopMost = true, Width = 700, Height = 500)
+
+    let M : Matrix<double> = DenseMatrix.init N N (fun i j -> double ((i+j) % 2))
+
+    let S = ScrambleMap M N k
+    let mutable temperature = 100.0
+    for j in 0..1 do
+        match j with
+            |0 -> temperature <- 0.0
+            |1 -> temperature <- 25.0
+            |2 -> temperature <- 50.0
+            |3 -> temperature <- 75.0
+            |4 -> temperature <- 100.0
+            |5 -> temperature <- 500.0
+        //Try to solve the map with j temperature
+        let simulatedAnnealingResult = (EvolutionaryAlgoritms.SimulatedAnnealing.runWithArguments M S temperature cooling maxIterations)
+        let simulatedAnnealingChart = 
+            printfn "%A" simulatedAnnealingResult
+            let line = [ for x in 0..simulatedAnnealingResult.Length-1 -> (x,simulatedAnnealingResult.Item(x))]
+            Chart.Line(line,Name=temperature.ToString()) 
+            |> Chart.WithLegend(Title="Temperature")
+            |> Chart.WithYAxis(Title="Fitness as a function of iterations - Simulated Annealing")
+        charts <- List.append charts [simulatedAnnealingChart]
+    
+    let SimulatedAnnealingChartControl = new ChartControl(Chart.Combine charts, Dock=DockStyle.Fill)
+    form.Controls.Add(SimulatedAnnealingChartControl)
+    
+    do Application.Run(form) |> ignore
     0  
