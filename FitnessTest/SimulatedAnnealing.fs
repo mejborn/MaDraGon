@@ -12,13 +12,13 @@ module public SimulatedAnnealing =
             Seq.initInfinite (fun _ -> this.Next(minValue, maxValue))
 
     let rnd = System.Random()
-<<<<<<< HEAD
+
     let Temperature = 100.0
     let MinTemp = 0.00001
     let Cooling = 0.01
-=======
+
     let mutable numIterations = 0
->>>>>>> origin/master
+
     let lambda = 1.0
     
     let rec loop (original : Matrix<double>) (solution : Matrix<double>) (fitnessList : List<double>) temperature cooling maxIterations =
@@ -69,16 +69,13 @@ module public SimulatedAnnealing =
         else if(rnd.NextDouble() <= AcceptanceProbability && numIterations < maxIterations) then
             loop original NewSolution NewFitnessList NewTemperature cooling maxIterations
         //Use old fitnesslist since new fitness isnt usefull
-<<<<<<< HEAD
-        else 
-            loop original solution NewTemperature fitnessList
-=======
+
         else if (numIterations < maxIterations) then
             loop original solution fitnessList NewTemperature cooling maxIterations
         else
             //printfn "%A %A" original solution
             fitnessList
->>>>>>> origin/master
+
 
     let run original solution =
         let temperature = 100.0
