@@ -14,6 +14,10 @@ type System.Random with
     member this.GetValues(minValue, maxValue) =
         Seq.initInfinite (fun _ -> this.Next(minValue, maxValue))
 
+
+let N = 10
+let k = 30
+
 let rnd = System.Random()
 
 let ScrambleMap (S : Matrix<double>) N k =
@@ -46,7 +50,11 @@ let main argv =
 
     let S = ScrambleMap M N k
     let mutable temperature = 100.0
+<<<<<<< HEAD
     for j in 0..5 do
+=======
+    for j in 0..3 do
+>>>>>>> origin/master
         match j with
             |0 -> temperature <- 0.1
             |1 -> temperature <- 0.2

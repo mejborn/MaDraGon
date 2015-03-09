@@ -7,6 +7,24 @@ open FSharp.Charting
 open System.Drawing
 
 module public FitTest =
+    let rec Density (original : double[][]) (solution : double[][]) =
+        let N = int original.Length
+        
+        let fitness =
+            match N with
+            |0 -> 0.0
+            |1 -> if (original.[0].[0] = solution.[0].[0]) then 0.0 else 1.0  
+            |_ -> 
+                (Density original.[..(N/2)-1].[..(N/2-1)] solution.[..(N/2)-1].[..(N/2)-1]) +
+                (Density original.[..(N/2)-1].[(N/2)..] solution.[..(N/2)-1].[(N/2)..]) +
+                (Density original.[(N/2)..].[..(N/2)-1] solution.[(N/2)..].[..(N/2)-1]) +
+                (Density original.[(N/2)..].[(N/2)..] solution.[(N/2)..].[(N/2)..])
+
+        let sumOriginal = Seq.concat original |> Seq.sumBy (fun value -> if (value =  1.0) then 1.0 else 0.0) 
+        let sumSolution = Seq.concat solution |> Seq.sumBy (fun value -> if (value =  1.0) then 1.0 else 0.0)
+
+        abs (sumOriginal - sumSolution) + fitness
+    
     let Hamming (original : double[][]) solution =
         Distance.Hamming(Array.concat original , Array.concat solution)/2.0
     
@@ -86,4 +104,8 @@ module public FitTest =
         let originalArray = original.ToColumnArrays()
         let solutionArray = solution.ToColumnArrays()
         
+<<<<<<< HEAD
         hamming originalArray solutionArray
+=======
+        Density originalArray solutionArray
+>>>>>>> origin/master
