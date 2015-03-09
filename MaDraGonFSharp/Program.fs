@@ -13,7 +13,7 @@ type System.Random with
     member this.GetValues(minValue, maxValue) =
         Seq.initInfinite (fun _ -> this.Next(minValue, maxValue))
 
-let N = 4
+let N = 5
 let k = 30
 let rnd = System.Random()
 

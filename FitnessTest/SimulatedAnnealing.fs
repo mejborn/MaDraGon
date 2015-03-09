@@ -15,7 +15,7 @@ module public SimulatedAnnealing =
     let Temperature = 100.0
     let MinTemp = 0.00001
     let Cooling = 0.01
-    let lambda = Constants.E
+    let lambda = 1.0
     
     let rec loop (original : Matrix<double>) solution temperature (fitnessList : List<double>) =
         let N = original.RowCount
@@ -65,11 +65,8 @@ module public SimulatedAnnealing =
         else if(rnd.NextDouble() <= AcceptanceProbability && temperature > MinTemp) then
             loop original NewSolution NewTemperature NewFitnessList
         //Use old fitnesslist since new fitness isnt usefull
-        else if (temperature > MinTemp) then
+        else 
             loop original solution NewTemperature fitnessList
-        else
-            printfn "%A %A" original solution
-            fitnessList
 
     let run original solution =
         loop original solution Temperature []
