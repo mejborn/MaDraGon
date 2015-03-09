@@ -35,10 +35,10 @@ let ScrambleMap (S : Matrix<double>) N k =
 
 [<EntryPoint>]
 let main argv = 
-    let N = 5
+    let N = 10
     let k = 30
-    let cooling = 0.01
-    let maxIterations = 10000
+    let cooling = 0.0001
+    let maxIterations = 20000
     let mutable charts = []
     let form = new Form(Visible = true, TopMost = true, Width = 700, Height = 500)
 
@@ -46,14 +46,17 @@ let main argv =
 
     let S = ScrambleMap M N k
     let mutable temperature = 100.0
-    for j in 0..1 do
+    for j in 0..5 do
         match j with
-            |0 -> temperature <- 0.0
-            |1 -> temperature <- 25.0
-            |2 -> temperature <- 50.0
-            |3 -> temperature <- 75.0
-            |4 -> temperature <- 100.0
-            |5 -> temperature <- 500.0
+            |0 -> temperature <- 0.1
+            |1 -> temperature <- 0.2
+            |2 -> temperature <- 0.4
+            |3 -> temperature <- 0.5
+            |4 -> temperature <- 0.6
+            |5 -> temperature <- 0.7
+            |6 -> temperature <- 0.8
+            |7 -> temperature <- 0.9
+            |5 -> temperature <- 1.0
         //Try to solve the map with j temperature
         let simulatedAnnealingResult = (EvolutionaryAlgoritms.SimulatedAnnealing.runWithArguments M S temperature cooling maxIterations)
         let simulatedAnnealingChart = 

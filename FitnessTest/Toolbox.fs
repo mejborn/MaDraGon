@@ -86,4 +86,4 @@ module public FitTest =
         let originalArray = original.ToColumnArrays()
         let solutionArray = solution.ToColumnArrays()
         
-        Hamming originalArray solutionArray
+        hamming originalArray solutionArray
