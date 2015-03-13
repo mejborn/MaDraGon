@@ -42,41 +42,46 @@ let main argv =
     let N = 10
     let k = 30
     let cooling = 0.0001
-    let maxIterations = 20000
+    let maxIterations = 10000
+    let numRunsForMean = 100
     let mutable charts = []
-    let form = new Form(Visible = true, TopMost = true, Width = 700, Height = 500)
 
     let M : Matrix<double> = DenseMatrix.init N N (fun i j -> double ((i+j) % 2))
 
     let S = ScrambleMap M N k
     let mutable temperature = 100.0
-<<<<<<< HEAD
-    for j in 0..5 do
-=======
-    for j in 0..3 do
->>>>>>> origin/master
-        match j with
-            |0 -> temperature <- 0.1
-            |1 -> temperature <- 0.2
-            |2 -> temperature <- 0.4
-            |3 -> temperature <- 0.5
-            |4 -> temperature <- 0.6
-            |5 -> temperature <- 0.7
-            |6 -> temperature <- 0.8
-            |7 -> temperature <- 0.9
-            |5 -> temperature <- 1.0
+
+    let mutable results : double array = Array.zeroCreate maxIterations
+
+    for t in 0..10 do
+        printfn "%A" t
+        match t with
+            |0 -> temperature <- 0.0
+            |1 -> temperature <- 0.1
+            |2 -> temperature <- 0.2
+            |3 -> temperature <- 0.3
+            |4 -> temperature <- 0.4
+            |5 -> temperature <- 0.5
+            |6 -> temperature <- 0.6
+            |7 -> temperature <- 0.7
+            |8 -> temperature <- 0.8
+            |9 -> temperature <- 0.9
+            |10 -> temperature <- 1.0
         //Try to solve the map with j temperature
-        let simulatedAnnealingResult = (EvolutionaryAlgoritms.SimulatedAnnealing.runWithArguments M S temperature cooling maxIterations)
-        let simulatedAnnealingChart = 
-            printfn "%A" simulatedAnnealingResult
-            let line = [ for x in 0..simulatedAnnealingResult.Length-1 -> (x,simulatedAnnealingResult.Item(x))]
-            Chart.Line(line,Name=temperature.ToString()) 
-            |> Chart.WithLegend(Title="Temperature")
-            |> Chart.WithYAxis(Title="Fitness as a function of iterations - Simulated Annealing")
-        charts <- List.append charts [simulatedAnnealingChart]
-    
-    let SimulatedAnnealingChartControl = new ChartControl(Chart.Combine charts, Dock=DockStyle.Fill)
-    form.Controls.Add(SimulatedAnnealingChartControl)
-    
-    do Application.Run(form) |> ignore
+        let mutable resultArray : List<double> array = Array.zeroCreate numRunsForMean
+        for i in 0..numRunsForMean-1 do
+            printfn "%A" i
+            let simulatedAnnealingResult = (EvolutionaryAlgoritms.SimulatedAnnealing.runWithArguments M S temperature cooling maxIterations)
+            resultArray.[i] <- simulatedAnnealingResult
+        
+        for i in 0..resultArray.Length-1 do
+            for j in 0..resultArray.[i].Length-1 do
+                results.[j] <- results.[j] + resultArray.[i].[j]
+        for i in 0..results.Length-1 do
+            results.[i] <- float results.[i] / float numRunsForMean
+
+        
+        let file = System.IO.File.AppendText("N_" + N.ToString() + "k_" + k.ToString() + "Temperature_" + temperature.ToString() + ".txt")
+        for i in 0..results.Length-1 do
+           file.WriteLine(i.ToString() + " " + results.[i].ToString())
     0  

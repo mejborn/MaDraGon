@@ -45,7 +45,6 @@ module public FitTest =
                     else
                         N-p2+p1
             (distance x1 x2) + (distance y1 y2)
-        
        
         let FindDistancesForOnePoint (x,y) = 
             [for i in 0..N-1 do
@@ -104,8 +103,4 @@ module public FitTest =
         let originalArray = original.ToColumnArrays()
         let solutionArray = solution.ToColumnArrays()
         
-<<<<<<< HEAD
-        hamming originalArray solutionArray
-=======
         Density originalArray solutionArray
->>>>>>> origin/master

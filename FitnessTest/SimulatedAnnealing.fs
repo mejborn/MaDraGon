@@ -71,10 +71,10 @@ module public SimulatedAnnealing =
         //Use old fitnesslist since new fitness isnt usefull
 
         else if (numIterations < maxIterations) then
-            loop original solution fitnessList NewTemperature cooling maxIterations
+            loop original solution NewFitnessList NewTemperature cooling maxIterations
         else
             //printfn "%A %A" original solution
-            fitnessList
+            NewFitnessList
 
 
     let run original solution =
