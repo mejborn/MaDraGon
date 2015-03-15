@@ -4,6 +4,12 @@ open MathNet.Numerics.LinearAlgebra
 
 //Movement of matrices
 module public MoveMent =
+    type System.Random with
+        /// Generates an infinite sequence of random numbers within the given range.
+        member this.GetValues(minValue, maxValue) =
+            Seq.initInfinite (fun _ -> this.Next(minValue, maxValue))
+    let rnd = System.Random()
+
     type direction =
     | Up
     | Down
@@ -38,3 +44,17 @@ module public MoveMent =
         | Move(Down,col) -> M'.SetColumn(col,vector)
 
         M'
+
+    let ScrambleMap (S : Matrix<double>) N k =
+        let directions = 
+            rnd.GetValues(0,3)
+            |> Seq.take k
+            |> Seq.map (fun n ->
+                match n with
+                | 0 -> direction.Up
+                | 1 -> direction.Down
+                | 2 -> direction.Right
+                | _ -> direction.Left)
+        let rowcols = rnd.GetValues(0,N-1) |> Seq.take k
+        let moves = Seq.map2 (fun direction rowcol -> Move(direction,rowcol)) directions rowcols
+        Seq.fold (fun M move -> (MakeMove M move)) S moves

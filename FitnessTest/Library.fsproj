@@ -70,6 +70,7 @@
     <None Include="app.config" />
     <Compile Include="Movement.fs" />
     <Compile Include="SimulatedAnnealing.fs" />
+    <Compile Include="MuPlusLambda.fs" />
   </ItemGroup>
   <PropertyGroup>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>

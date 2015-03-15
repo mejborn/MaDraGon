@@ -16,36 +16,21 @@ module public SimulatedAnnealing =
     let Temperature = 100.0
     let MinTemp = 0.00001
     let Cooling = 0.01
+    let lambda = 1.0
 
     let mutable numIterations = 0
-
-    let lambda = 1.0
     
     let rec loop (original : Matrix<double>) (solution : Matrix<double>) (fitnessList : List<double>) temperature cooling maxIterations =
         let N = original.RowCount
         numIterations <- numIterations + 1
         //Calculate current solutions fitness:
         let Fitness = FitTest.doFitTest original solution
-        
-        //Display progress in console
-        //printfn "Current temperature: %A \nIteration count    : %A \nCurrent fitness    : %A \n" temperature numIterations Fitness
 
         //Generate random solution:
         let k = Poisson.Sample(lambda)
         
         let NewSolution =
-            let directions = 
-                rnd.GetValues(0,3)
-                |> Seq.take k
-                |> Seq.map (fun n ->
-                    match n with
-                    | 0 -> MoveMent.direction.Up
-                    | 1 -> MoveMent.direction.Down
-                    | 2 -> MoveMent.direction.Right
-                    | _ -> MoveMent.direction.Left)
-            let rowcols = rnd.GetValues(0,N-1) |> Seq.take k
-            let moves = Seq.map2 (fun direction rowcol -> MoveMent.Move(direction,rowcol)) directions rowcols
-            Seq.fold (fun M move -> (MoveMent.MakeMove M move)) solution moves
+            MoveMent.ScrambleMap solution N k
         
         //Generate new fitness from data      
         let NewFitness =
