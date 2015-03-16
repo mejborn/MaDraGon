@@ -44,6 +44,7 @@ module public MuPlusLambda =
             for parent in newParents do
                 newFitnessList <- List.append newFitnessList [FitTest.doFitTest original parent]
             //Run the loop again
+            numIterations <- numIterations + 1
             loop original newParents fitnessList maxIterations
 
     let runWithArguments original solution maxIterations mu' lambda' =

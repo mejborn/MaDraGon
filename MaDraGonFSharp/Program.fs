@@ -28,7 +28,7 @@ let main argv =
     let mu = 3
     let lambda = 3
     let maxIterations = 10000
-    let numRunsForMean = 1000
+    let numRunsForMean = 100
     let mutable charts = []
 
     let M : Matrix<double> = DenseMatrix.init N N (fun i j -> double ((i+j) % 2))
