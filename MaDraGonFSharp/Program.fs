@@ -25,15 +25,23 @@ let main argv =
     let N = 10
     let k = 50
     let cooling = 0.0001
+<<<<<<< HEAD
     let mu = 3
     let lambda = 3
     let maxIterations = k
     let numRunsForMean = 1000
+=======
+    let maxIterations = 700
+    let numRunsForMean = 5000
+>>>>>>> origin/master
     let mutable charts = []
 
     let M : Matrix<double> = DenseMatrix.init N N (fun i j -> double ((i+j) % 2))
     let S = MoveMent.ScrambleMap M N k
+    printfn "%A" M
+    printfn "%A" S
     
+<<<<<<< HEAD
     let mutable temperature = 0.0
     let mutable results : double array = Array.zeroCreate maxIterations
 
@@ -43,6 +51,41 @@ let main argv =
         printfn "%A" i
         let simulatedAnnealingResult = (EvolutionaryAlgoritms.LocalSearch.runWithArguments M S maxIterations)
         resultArray.[i] <- simulatedAnnealingResult
+=======
+    let mutable results : double array = Array.zeroCreate maxIterations
+
+    //Run Simulated Annealing with Temperature = 0.0
+//    let mutable temperature = 0.0
+//    for t in 0.0 .. 0.1 .. 1.0 do
+//        temperature <- t
+//        let mutable resultArray : List<double> array = Array.zeroCreate numRunsForMean
+//        for i in 0..numRunsForMean-1 do
+//            printfn "Simulated Annealing Iteration run no: %A" i
+//            let simulatedAnnealingResult = (EvolutionaryAlgoritms.SimulatedAnnealing.runWithArguments M S temperature cooling maxIterations)
+//            resultArray.[i] <- simulatedAnnealingResult
+//        
+//        for i in 0..resultArray.Length-1 do
+//            for j in 0..resultArray.[i].Length-1 do
+//                results.[j] <- results.[j] + resultArray.[i].[j]
+//        for i in 0..results.Length-1 do
+//            results.[i] <- float results.[i] / float numRunsForMean
+//
+//        let file = System.IO.File.AppendText("SimulatedAnnealing_" + "_N_" + N.ToString() + "_k_" + k.ToString() + "_Temp_" + t.ToString() + ".txt")
+//        for i in 0..results.Length-1 do
+//            file.WriteLine(i.ToString() + " " + results.[i].ToString())
+//        file.Flush()
+//        file.Close()
+
+    //Run Mu + Lambda
+    let mu = 4
+    let lambda = 1
+    let mutable results : double array = Array.zeroCreate (maxIterations * (int mu))
+    let mutable resultArray : List<double> array = Array.zeroCreate numRunsForMean
+    for i in 0..numRunsForMean-1 do
+        printfn "Mu Plus Lambda Iteration run no: %A" i
+        let muPlusLambdaResult = (EvolutionaryAlgoritms.MuPlusLambda.runWithArguments M [S] maxIterations mu lambda)
+        resultArray.[i] <- muPlusLambdaResult
+>>>>>>> origin/master
         
     for i in 0..resultArray.Length-1 do
         for j in 0..resultArray.[i].Length-1 do
@@ -55,6 +98,7 @@ let main argv =
         file.WriteLine(i.ToString() + " " + results.[i].ToString())
     file.Flush()
     file.Close()
+<<<<<<< HEAD
     
 //    //Run Simulated Annealing
 //    let mutable resultArray : List<double> array = Array.zeroCreate numRunsForMean
@@ -89,4 +133,6 @@ let main argv =
 //    let file = System.IO.File.AppendText("MuPlusLambda_" + "N_" + N.ToString() + "k_" + k.ToString() + "Mu_" + mu.ToString() + "Lambda_" + lambda.ToString() + ".txt")
 //    for i in 0..results.Length-1 do
 //        file.WriteLine(i.ToString() + " " + results.[i].ToString())
+=======
+>>>>>>> origin/master
     0  

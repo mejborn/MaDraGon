@@ -103,4 +103,8 @@ module public FitTest =
         let originalArray = original.ToColumnArrays()
         let solutionArray = solution.ToColumnArrays()
         
+<<<<<<< HEAD
         Density originalArray solutionArray
+=======
+        Hamming originalArray solutionArray
+>>>>>>> origin/master
