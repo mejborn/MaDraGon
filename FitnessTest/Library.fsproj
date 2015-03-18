@@ -71,6 +71,7 @@
     <Compile Include="Movement.fs" />
     <Compile Include="SimulatedAnnealing.fs" />
     <Compile Include="MuPlusLambda.fs" />
+    <Compile Include="LocalSearch.fs" />
   </ItemGroup>
   <PropertyGroup>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>
