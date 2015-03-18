@@ -103,4 +103,4 @@ module public FitTest =
         let originalArray = original.ToColumnArrays()
         let solutionArray = solution.ToColumnArrays()
         
-        NQubed originalArray solutionArray
+        Hamming originalArray solutionArray
