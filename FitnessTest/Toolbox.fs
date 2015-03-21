@@ -102,9 +102,5 @@ module public FitTest =
     let doFitTest (original : Matrix<double>) (solution : Matrix<double>) =
         let originalArray = original.ToColumnArrays()
         let solutionArray = solution.ToColumnArrays()
-        
-<<<<<<< HEAD
-        Density originalArray solutionArray
-=======
-        Hamming originalArray solutionArray
->>>>>>> origin/master
+  
+        Density originalArray solutionArray + Hamming originalArray solutionArray

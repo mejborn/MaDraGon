@@ -41,8 +41,7 @@ module public MuPlusLambda =
             
         //Generate new fitness list for the new parents
         let mutable newFitnessList = fitnessList
-        for parent in newParents do
-            newFitnessList <- List.append newFitnessList [FitTest.doFitTest original parent]
+        newFitnessList <- List.append newFitnessList [FitTest.doFitTest original newParents.Head]
         //Run the loop again
         numIterations <- numIterations + 1
         if (numIterations = maxIterations) then
