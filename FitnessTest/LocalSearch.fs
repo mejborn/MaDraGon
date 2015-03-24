@@ -42,12 +42,15 @@ module public LocalSearch =
             (List.append fitnessList [NewFitness],NewSolution)
 
     let rec LocalSearch (original : Matrix<double>) (solution : Matrix<double>) (fitnessList : List<double>) (maxSteps : int) =
+        printf "Local Search Step No: %A " numSteps 
+        printfn "Current fitness: %A" (FitTest.doFitTest original solution)
+
         if (numSteps >= maxSteps || (not fitnessList.IsEmpty && fitnessList.Head = 0.0)) then
             printfn "%A" original
             printfn "%A" solution
-            System.Console.ReadLine()
             fitnessList
         else
+            numSteps <- numSteps + 1
             let N = original.RowCount
             let fitness = FitTest.doFitTest original solution
             let mutable newSolution = solution
@@ -58,19 +61,11 @@ module public LocalSearch =
                     |0 -> tempSolution <- MoveMent.MakeMove solution (MoveMent.Move(MoveMent.Left,i))
                     |1 -> tempSolution <- MoveMent.MakeMove solution (MoveMent.Move(MoveMent.Right,i))
                     |2 -> tempSolution <- MoveMent.MakeMove solution (MoveMent.Move(MoveMent.Up,i))
-                    |3 -> tempSolution <- MoveMent.MakeMove solution (MoveMent.Move(MoveMent.Down,i))
+                    |_ -> tempSolution <- MoveMent.MakeMove solution (MoveMent.Move(MoveMent.Down,i))
                     if(FitTest.doFitTest original tempSolution < FitTest.doFitTest original newSolution) then
                         newSolution <- tempSolution
-            //Try with SimulatedAnnealing
-            if (newSolution = solution) then
-                numIterations <- 0
-                let (simulatedAnnealingList,newSolution2) = simulatedAnnealing original solution [] 10000
-                numSteps <- numSteps + simulatedAnnealingList.Length-1
-                newSolution <- newSolution2
-         
-            printf "Local Search Step No: %A " numSteps 
-            printfn "Current fitness: %A" (FitTest.doFitTest original newSolution)
-            numSteps <- numSteps + 1
+            
+            
             LocalSearch original newSolution (List.append fitnessList [FitTest.doFitTest original newSolution]) maxSteps
     
     let runWithArguments original solution maxIterations =

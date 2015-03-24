@@ -5,7 +5,7 @@ open MathNet.Numerics.LinearAlgebra
 open ToolBox
 open MoveMent
 
-module public MuPlusLambda = 
+module public MuCommaLambda = 
     type System.Random with
         /// Generates an infinite sequence of random numbers within the given range.
         member this.GetValues(minValue, maxValue) =
@@ -20,9 +20,7 @@ module public MuPlusLambda =
         let N = original.RowCount
         //Generate lambda new children from random mu parents
         let mutable newGeneration = []
-        //Add the parents to the population
-        for parent in parents do
-            newGeneration <- List.append newGeneration [(FitTest.doFitTest original parent,parent)]
+
         for i in 0..lambda do
             //Generate random solution:
             let k = Poisson.Sample(1.0)

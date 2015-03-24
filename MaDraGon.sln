@@ -3,23 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.30501.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "MaDraGonFSharp", "MaDraGonFSharp\MaDraGonFSharp.fsproj", "{45C0E41D-05B7-474A-8581-BA9BF71A70B5}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "MaDraGon", "MaDraGonFSharp\MaDraGon.fsproj", "{45C0E41D-05B7-474A-8581-BA9BF71A70B5}"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Library", "FitnessTest\Library.fsproj", "{23695192-2EA8-4D25-848E-AF8A7E41B9E4}"
 EndProject
 Global
-	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 3
-		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
-		SccTeamFoundationServer = https://mejborn.visualstudio.com/defaultcollection
-		SccLocalPath0 = .
-		SccProjectUniqueName1 = MaDraGonFSharp\\MaDraGonFSharp.fsproj
-		SccProjectName1 = MaDraGonFSharp
-		SccLocalPath1 = MaDraGonFSharp
-		SccProjectUniqueName2 = FitnessTest\\Library.fsproj
-		SccProjectName2 = FitnessTest
-		SccLocalPath2 = FitnessTest
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU

@@ -7,6 +7,7 @@ open FSharp.Collections.ParallelSeq
 open System.Drawing
 open ToolBox
 open MoveMent
+open Madragon.RunSimulation
 open EvolutionaryAlgoritms
 
 type System.Random with
@@ -14,87 +15,37 @@ type System.Random with
     member this.GetValues(minValue, maxValue) =
         Seq.initInfinite (fun _ -> this.Next(minValue, maxValue))
 
-
-let N = 10
-let k = 30
-
 let rnd = System.Random()
 
 [<EntryPoint>]
 let main argv = 
     let N = 10
-    let k = 50
-    let cooling = 0.0001
+    let k = 30
+    let cooling = 0.01
 
-    let maxIterations = k
-    let numRunsForMean = 1
+    let maxIterations = 5000
+    let numRunsForMean = 100
 
-    let M : Matrix<double> = DenseMatrix.init N N (fun i j -> double ((i+j) % 2))
+    let M : Matrix<double> = DenseMatrix.init N N (fun i j -> if (i = N/2 || i = N/2-1 || i= N/2+1 || j = N/2) then 1.0 else 0.0)
     let S = MoveMent.ScrambleMap M N k
     printfn "%A" M
     printfn "%A" S
+    
+    //Try with Local Search
+    localSearch M S k
+    
+    //Run Simulated Annealing with t temperature
+    for t in 0..0 do
+        SimulatedAnnealing M S k numRunsForMean maxIterations (float t) cooling
+    
+    //Run Mu + Lambda
+    for mu in 1..10 do
+        for lambda in 0..10 do
+            MuPlusLambda M S k numRunsForMean maxIterations mu lambda
 
-    let mutable results : double array = Array.zeroCreate (maxIterations * 2)
-
-    //Run Local Search
-    let mutable resultArray : List<double> array = Array.zeroCreate numRunsForMean
-    for i in 0..numRunsForMean-1 do
-        printfn "Local Search Run no: %A" i
-        let localSearchResult = (EvolutionaryAlgoritms.LocalSearch.runWithArguments M S maxIterations)
-        resultArray.[i] <- localSearchResult
-        
-    for i in 0..resultArray.Length-1 do
-        for j in 0..resultArray.[i].Length-1 do
-            results.[j] <- results.[j] + resultArray.[i].[j]
-    for i in 0..results.Length-1 do
-        results.[i] <- float results.[i] / float numRunsForMean
-
-    let file = System.IO.File.AppendText("LocalSearch" + "_N_" + N.ToString() + "_k_" + k.ToString() + ".txt")
-    for i in 0..results.Length-1 do
-        file.WriteLine(i.ToString() + " " + results.[i].ToString())
-    file.Flush()
-    file.Close()
-
-    //Run Simulated Annealing with Temperature = 0.0
-//    let temperature = 0.0
-//    let mutable resultArray : List<double> array = Array.zeroCreate numRunsForMean
-//    for i in 0..numRunsForMean-1 do
-//        printfn "Simulated Annealing Run no: %A" i
-//        let simulatedAnnealingResult = (EvolutionaryAlgoritms.SimulatedAnnealing.runWithArguments M S temperature cooling maxIterations)
-//        resultArray.[i] <- simulatedAnnealingResult
-//        
-//    for i in 0..resultArray.Length-1 do
-//        for j in 0..resultArray.[i].Length-1 do
-//            results.[j] <- results.[j] + resultArray.[i].[j]
-//    for i in 0..results.Length-1 do
-//        results.[i] <- float results.[i] / float numRunsForMean
-//
-//    let file = System.IO.File.AppendText("SimulatedAnnealing_" + "_N_" + N.ToString() + "_k_" + k.ToString() + "_Temp_" + t.ToString() + ".txt")
-//    for i in 0..results.Length-1 do
-//        file.WriteLine(i.ToString() + " " + results.[i].ToString())
-//    file.Flush()
-//    file.Close()
-//
-//    //Run Mu + Lambda
-//    let mu = 4
-//    let lambda = 1
-//    let mutable results : double array = Array.zeroCreate (maxIterations * (int mu))
-//    let mutable resultArray : List<double> array = Array.zeroCreate numRunsForMean
-//    for i in 0..numRunsForMean-1 do
-//        printfn "Mu Plus Lambda Run no: %A" i
-//        let muPlusLambdaResult = (EvolutionaryAlgoritms.MuPlusLambda.runWithArguments M [S] maxIterations mu lambda)
-//        resultArray.[i] <- muPlusLambdaResult
-//
-//    for i in 0..resultArray.Length-1 do
-//        for j in 0..resultArray.[i].Length-1 do
-//            results.[j] <- results.[j] + resultArray.[i].[j]
-//    for i in 0..results.Length-1 do
-//        results.[i] <- float results.[i] / float numRunsForMean
-//
-//    let file = System.IO.File.AppendText("LocalSearch_" + "N_" + N.ToString() + "k_" + k.ToString() + "Temperature_" + temperature.ToString() + ".txt")
-//    for i in 0..results.Length-1 do
-//        file.WriteLine(i.ToString() + " " + results.[i].ToString())
-//    file.Flush()
-//    file.Close()
-
-    0  
+    //Run Mu , Lambda
+    //Lambda must be equal or greater than mu
+    for mu in 1..10 do
+        for lambda in mu..10 do
+            MuCommaLambda M S k numRunsForMean maxIterations mu lambda
+    0

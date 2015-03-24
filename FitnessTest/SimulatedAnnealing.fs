@@ -13,9 +13,6 @@ module public SimulatedAnnealing =
 
     let rnd = System.Random()
 
-    let Temperature = 100.0
-    let MinTemp = 0.00001
-    let Cooling = 0.01
     let lambda = 1.0
 
     let mutable numIterations = 0
@@ -49,25 +46,15 @@ module public SimulatedAnnealing =
                 Constants.E ** ((Fitness-NewFitness)/temperature)
 
         if NewFitness = 0.0 then
-            //printfn "%A %A" original NewSolution
+            printfn "%A %A" original NewSolution
             NewFitnessList
         else if(rnd.NextDouble() <= AcceptanceProbability && numIterations < maxIterations) then
             loop original NewSolution NewFitnessList NewTemperature cooling maxIterations
-        //Use old fitnesslist since new fitness isnt usefull
-
         else if (numIterations < maxIterations) then
             loop original solution NewFitnessList NewTemperature cooling maxIterations
         else
             //printfn "%A %A" original solution
             NewFitnessList
-
-
-    let run original solution =
-        let temperature = 100.0
-        let cooling = 0.01
-        let maxIterations = 100000
-
-        loop original solution [] temperature  cooling maxIterations
 
     let runWithArguments original solution temperature cooling maxIterations =
         numIterations <- 0
