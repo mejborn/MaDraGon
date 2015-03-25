@@ -31,7 +31,7 @@ module RunSimulation =
         let N = M.RowCount
         
         for i in 0..numRunsForMean-1 do
-            printfn "Mu Plus Lambda Run no: %A" i
+            printfn "Mu + Lambda Run no: %A" i
             let muPlusLambdaResult = (EvolutionaryAlgoritms.MuPlusLambda.runWithArguments M [S] maxIterations mu lambda)
             resultArray.[i] <- muPlusLambdaResult
 
@@ -41,7 +41,7 @@ module RunSimulation =
         for i in 0..results.Length-1 do
             results.[i] <- float results.[i] / float numRunsForMean
 
-        let file = System.IO.File.AppendText("Output\MuPlusLambda_" + "N_" + N.ToString() + "_k_" + k.ToString() + "_Mu_" + mu.ToString() + "_Lambda_" + mu.ToString() + ".txt")
+        let file = System.IO.File.AppendText("Output\MuPlusLambda_" + "N_" + N.ToString() + "_k_" + k.ToString() + "_Mu_" + mu.ToString() + "_Lambda_" + lambda.ToString() + ".txt")
         for i in 0..results.Length-1 do
             file.WriteLine(i.ToString() + " " + results.[i].ToString())
         file.Flush()
@@ -53,7 +53,7 @@ module RunSimulation =
         let N = M.RowCount
 
         for i in 0..numRunsForMean-1 do
-            printfn "Mu Plus Lambda Run no: %A" i
+            printfn "Mu , Lambda Run no: %A" i
             let muPlusLambdaResult = (EvolutionaryAlgoritms.MuPlusLambda.runWithArguments M [S] maxIterations mu lambda)
             resultArray.[i] <- muPlusLambdaResult
 
@@ -63,7 +63,7 @@ module RunSimulation =
         for i in 0..results.Length-1 do
             results.[i] <- float results.[i] / float numRunsForMean
 
-        let file = System.IO.File.AppendText("Output\MuPlusLambda_" + "N_" + N.ToString() + "_k_" + k.ToString() + "_Mu_" + mu.ToString() + "_Lambda_" + mu.ToString() + ".txt")
+        let file = System.IO.File.AppendText("Output\MuCommaLambda_" + "N_" + N.ToString() + "_k_" + k.ToString() + "_Mu_" + mu.ToString() + "_Lambda_" + lambda.ToString() + ".txt")
         for i in 0..results.Length-1 do
             file.WriteLine(i.ToString() + " " + results.[i].ToString())
         file.Flush()

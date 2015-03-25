@@ -34,14 +34,14 @@ let main argv =
     //Try with Local Search
     localSearch M S k
     
-    //Run Simulated Annealing with t temperature
-    for t in 0..0 do
-        SimulatedAnnealing M S k numRunsForMean maxIterations (float t) cooling
-    
-    //Run Mu + Lambda
-    for mu in 1..10 do
-        for lambda in 0..10 do
-            MuPlusLambda M S k numRunsForMean maxIterations mu lambda
+//    //Run Simulated Annealing with t temperature
+//    for t in 0..0 do
+//        SimulatedAnnealing M S k numRunsForMean maxIterations (float t) cooling
+//    
+//    //Run Mu + Lambda
+//    for mu in 1..10 do
+//        for lambda in 0..10 do
+//            MuPlusLambda M S k numRunsForMean maxIterations mu lambda
 
     //Run Mu , Lambda
     //Lambda must be equal or greater than mu
