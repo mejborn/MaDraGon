@@ -103,4 +103,4 @@ module public FitTest =
         let originalArray = original.ToColumnArrays()
         let solutionArray = solution.ToColumnArrays()
   
-        Density originalArray solutionArray
+        Hamming originalArray solutionArray

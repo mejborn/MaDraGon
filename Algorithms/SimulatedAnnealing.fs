@@ -12,11 +12,13 @@ module public SimulatedAnnealing =
             Seq.initInfinite (fun _ -> this.Next(minValue, maxValue))
 
     let rnd = System.Random()
-
-    let lambda = 1.0
-
+    let lambda = Constants.E
     let mutable numIterations = 0
-    
+    let mutable numIterationsWithoutMove = 0
+    let maxIterationsWithoutMove = 1000
+    let mutable originalSolution : Matrix<double> = DenseMatrix.init 1 1 (fun i j -> 0.0)
+    let mutable originalTemperature = 0.0
+
     let rec loop (original : Matrix<double>) (solution : Matrix<double>) (fitnessList : List<double>) temperature cooling maxIterations =
         let N = original.RowCount
         numIterations <- numIterations + 1
@@ -26,7 +28,7 @@ module public SimulatedAnnealing =
         //Generate random solution:
         let k = Poisson.Sample(lambda)
         
-        let NewSolution =
+        let (NewSolution,moves) =
             MoveMent.ScrambleMap solution N k
         
         //Generate new fitness from data      
@@ -45,17 +47,25 @@ module public SimulatedAnnealing =
             else
                 Constants.E ** ((Fitness-NewFitness)/temperature)
 
+        if (fitnessList.Length <> 0) && (Fitness >= fitnessList.[fitnessList.Length-1]) then
+                numIterationsWithoutMove <- numIterationsWithoutMove + 1
+
         if NewFitness = 0.0 then
             printfn "%A %A" original NewSolution
             NewFitnessList
+        else if numIterationsWithoutMove > maxIterationsWithoutMove then
+            //restart
+            printf "Restarting at iteration no: %A\n" numIterations
+            numIterationsWithoutMove <- 0
+            loop original originalSolution [] originalTemperature cooling maxIterations
         else if(rnd.NextDouble() <= AcceptanceProbability && numIterations < maxIterations) then
             loop original NewSolution NewFitnessList NewTemperature cooling maxIterations
-        else if (numIterations < maxIterations) then
-            loop original solution NewFitnessList NewTemperature cooling maxIterations
         else
-            //printfn "%A %A" original solution
-            NewFitnessList
+            loop original solution NewFitnessList NewTemperature cooling maxIterations
+       
 
     let runWithArguments original solution temperature cooling maxIterations =
+        originalTemperature <- temperature
+        originalSolution <- solution
         numIterations <- 0
         loop original solution [] temperature cooling maxIterations

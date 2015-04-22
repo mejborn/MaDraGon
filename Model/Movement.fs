@@ -57,4 +57,4 @@ module public MoveMent =
                 | _ -> direction.Left)
         let rowcols = rnd.GetValues(0,N-1) |> Seq.take k
         let moves = Seq.map2 (fun direction rowcol -> Move(direction,rowcol)) directions rowcols
-        Seq.fold (fun M move -> (MakeMove M move)) S moves
+        (Seq.fold (fun M move -> (MakeMove M move)) S moves,moves)
