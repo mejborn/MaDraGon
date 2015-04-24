@@ -5,7 +5,7 @@ open MathNet.Numerics.LinearAlgebra
 open ToolBox
 open MoveMent
 
-module public MuCommaLambda = 
+module MuCommaLambda = 
     type System.Random with
         /// Generates an infinite sequence of random numbers within the given range.
         member this.GetValues(minValue, maxValue) =

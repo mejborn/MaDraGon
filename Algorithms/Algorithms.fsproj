@@ -32,19 +32,6 @@
     <WarningLevel>3</WarningLevel>
     <DocumentationFile>bin\Release\Algorithms.XML</DocumentationFile>
   </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="mscorlib" />
-    <Reference Include="FSharp.Core, Version=$(TargetFSharpCoreVersion), Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Numerics" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Library1.fs" />
-    <None Include="Script.fsx" />
-  </ItemGroup>
   <PropertyGroup>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>
   </PropertyGroup>
@@ -61,6 +48,42 @@
     </Otherwise>
   </Choose>
   <Import Project="$(FSharpTargetsPath)" />
+  <ItemGroup>
+    <None Include="Script.fsx" />
+    <Compile Include="SimulatedAnnealing.fs" />
+    <Compile Include="MuPlusLambda.fs" />
+    <Compile Include="LocalSearch.fs" />
+    <Compile Include="MuCommaLambda.fs" />
+    <Compile Include="VariableNeighbourhoodSearch.fs" />
+    <Compile Include="RunSimulation.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="MathNet.Numerics">
+      <HintPath>..\packages\MathNet.Numerics.Signed.3.5.0\lib\net40\MathNet.Numerics.dll</HintPath>
+    </Reference>
+    <Reference Include="MathNet.Numerics.FSharp">
+      <HintPath>..\packages\MathNet.Numerics.FSharp.Signed.3.5.0\lib\net40\MathNet.Numerics.FSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="mscorlib" />
+    <Reference Include="FSharp.Core, Version=$(TargetFSharpCoreVersion), Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Numerics" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\FitnessTest\Library.fsproj">
+      <Name>Library</Name>
+      <Project>{23695192-2ea8-4d25-848e-af8a7e41b9e4}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\Model\Model.fsproj">
+      <Name>Model</Name>
+      <Project>{177fc109-7883-4a75-9156-99d23e313c03}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+  </ItemGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

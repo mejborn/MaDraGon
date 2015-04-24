@@ -1,56 +1,59 @@
 ﻿namespace EvolutionaryAlgoritms
-open MathNet.Numerics
-open MathNet.Numerics.Distributions
-open MathNet.Numerics.LinearAlgebra
 open ToolBox
-open MoveMent
-open FSharp.Collections.ParallelSeq
+open Model.MoveMent
+open Model.Types
 
-module public LocalSearch =
+module LocalSearch =
     let mutable numIterations = 0
-    let mutable numSteps = 0
-    let rnd = System.Random()
     
-    let rec LocalSearch (original : Matrix<double>) (solution : Matrix<double>) (fitnessList : List<double>) (maxSteps : int) previousMoves backStep =
-        printf "Local Search Step No: %A " numSteps 
-        printfn "Current fitness: %A" (FitTest.doFitTest original solution)
+    let rec loop (individual : Individual) fitnesses goal =
+        //Deconstruct the individual
+        let (fitness,board,path) = individual
+        printfn "Local Seach : Current fitness: %A" fitness
+        let N = board.RowCount
 
-        if (numSteps >= maxSteps || (not fitnessList.IsEmpty && fitnessList.Head = 0.0)) then
-            printfn "%A" original
-            printfn "%A" solution
-            fitnessList
-        else
-            numSteps <- numSteps + 1
-            let N = original.RowCount
-            let fitness = FitTest.doFitTest original solution
-            let mutable newSolution = solution
-            let mutable newSolution2 = solution
-            let mutable tempSolution  = solution
-            let mutable tempSolution2 = solution
-            for i in 0..N-1 do
-                for j in 0..3 do
+        //Optimisation needed!
+        let mutable tmp  = board
+        let mutable board' = board
+        let mutable move = Move(Left,0)
+        let mutable fitness' = FitTest.doFitTest board goal
+        for i in 0..N-1 do
+            for j in 0..3 do
+                let move' =
                     match j with
-                    |0 -> tempSolution <- MoveMent.MakeMove solution (MoveMent.Move(MoveMent.Left,i))
-                    |1 -> tempSolution <- MoveMent.MakeMove solution (MoveMent.Move(MoveMent.Right,i))
-                    |2 -> tempSolution <- MoveMent.MakeMove solution (MoveMent.Move(MoveMent.Up,i))
-                    |_ -> tempSolution <- MoveMent.MakeMove solution (MoveMent.Move(MoveMent.Down,i))
-                    if(FitTest.doFitTest original tempSolution < FitTest.doFitTest original newSolution) then
-                        newSolution2 <- newSolution
-                        newSolution <- tempSolution
-            if backStep then
-                printfn "Going Back..."
-                newSolution <- newSolution2
+                    |0 -> Move(Left,i)
+                    |1 -> Move(Right,i)
+                    |2 -> Move(Up,i)
+                    |_ -> Move(Down,i)
+                tmp <- MakeMove board move
+                let fitness' = FitTest.doFitTest board goal
+                if(fitness' < fitness) then
+                    board' <- tmp
+                    move <- move'
+        
+        //If taking a step reduced the fitness, try to take another.
+        if board' <> board then
+            let individual' = fitness',board',List.append path [move]
+            let fitnesses' = List.append fitnesses [fitness]
+            loop individual' fitnesses' goal
+        else
+            (individual,fitnesses)
 
-            if newSolution <> solution then
-                printfn "Solution differs. Walking forward.."
-                let moves = List.append [newSolution] previousMoves
-                LocalSearch original newSolution (List.append fitnessList [FitTest.doFitTest original newSolution]) maxSteps moves false
-            else
-                //Go 1 back -> Should now take the next best solution
-                let moves = List.ofSeq (Seq.skip 1 previousMoves)
-                printfn "%A" moves.Head
-                let oldSolution = previousMoves.Head
-                LocalSearch original oldSolution (List.append fitnessList [FitTest.doFitTest original newSolution]) maxSteps moves true
-    
-    let runWithArguments original solution maxSteps =
-        LocalSearch original solution [] maxSteps [] false
+    let run (island : Island) (goal : Board) (configuration : RunConfiguration) =
+        // Ignore the mutation type
+        let (population : Population , _) = island
+        // Perform local search on each individual on the Island.
+        // Since the local search only runs on a single individual, we need to handle the populations general fitness differently
+        // Pass the two sequences together. Return af sequence of touples, remake this as two new Lists.
+        let (individuals , fitnesses) = population
+        let population' = List.ofSeq (
+                            population
+                            ||> Seq.map2 (fun individual fitness -> loop individual [fitness] goal))
+        // The function returns a sequence of individuals and a sequence of lists of fitnesses
+        // Since a Population is defined as a sequence of individuals, and a sequence containing the best individuals fitness
+        // We will need to convert them back
+        let (_,fitness') = population'.Head
+        let (individuals') = List.ofSeq (population' |> Seq.map (fun (individual , _) -> individual))
+        // Return the new Island.
+        let island' : Island = (individuals',fitness') , Mutation.LocalSearch
+        island'

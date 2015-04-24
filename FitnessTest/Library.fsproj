@@ -64,18 +64,10 @@
     <Reference Include="System.Numerics" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Toolbox.fs" />
+    <Compile Include="FitnessTest.fs" />
     <None Include="Script.fsx" />
     <None Include="packages.config" />
     <None Include="app.config" />
-    <Compile Include="Movement.fs" />
-    <Compile Include="SimulatedAnnealing.fs" />
-    <Compile Include="MuPlusLambda.fs" />
-    <Compile Include="LocalSearch.fs" />
-    <Compile Include="MuCommaLambda.fs" />
-    <Compile Include="VariableNeighbourhoodSearch.fs" />
-    <Compile Include="World.fs" />
-    <Compile Include="RunSimulation.fs" />
   </ItemGroup>
   <PropertyGroup>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>

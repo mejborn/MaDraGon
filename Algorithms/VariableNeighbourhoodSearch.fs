@@ -5,7 +5,7 @@ open MathNet.Numerics.LinearAlgebra
 open ToolBox
 open MoveMent
 
-module public VariableNeighbourhoodSearch =
+module VariableNeighbourhoodSearch =
     let mutable k = 0
     let mutable numRunsForMean = 0
     let mutable maxIterations = 0

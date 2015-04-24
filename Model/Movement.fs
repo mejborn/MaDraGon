@@ -1,7 +1,6 @@
-﻿namespace MoveMent
-open MathNet.Numerics
+﻿namespace Model
 open MathNet.Numerics.LinearAlgebra
-
+open Types
 //Movement of matrices
 module public MoveMent =
     type System.Random with
@@ -10,51 +9,45 @@ module public MoveMent =
             Seq.initInfinite (fun _ -> this.Next(minValue, maxValue))
     let rnd = System.Random()
 
-    type direction =
-    | Up
-    | Down
-    | Left
-    | Right
-    
-    type move = Move of direction * int
-
-    let CycleLeft (vector : Vector<double>) =
+    let CycleLeft (vector : RowCol) =
+        //Insert all except first into sequence, then insert first at the end
         vector 
         |>  (fun xs ->  Seq.append (Seq.skip 1 xs) [Seq.head xs]) 
         |> Vector.Build.DenseOfEnumerable
 
-    let CycleRight (vector : Vector<double>) =
+    let CycleRight (vector : RowCol) =
+        //Insert last into sequence, then insert everythin except last
         vector 
         |>  (fun xs ->  Seq.append [vector.[vector.Count-1]] (vector.SubVector(0,vector.Count-1) ) )
         |> Vector.Build.DenseOfEnumerable
    
-    let MakeMove (M : Matrix<double>) (m : move) =
-        let mutable M' = M.Clone()
+    let MakeMove (board : Board) (m : move) =
+        let mutable board' = board.Clone()
         let vector =
             match m with
-            | Move(Left,row) -> M.Row(row) |> CycleLeft
-            | Move(Right,row) -> M.Row(row) |> CycleRight
-            | Move(Up,col) -> M.Column(col) |> CycleLeft
-            | Move(Down,col) -> M.Column(col) |> CycleRight
+            | Move(Left,row) -> board.Row(row) |> CycleLeft
+            | Move(Right,row) -> board.Row(row) |> CycleRight
+            | Move(Up,col) -> board.Column(col) |> CycleLeft
+            | Move(Down,col) -> board.Column(col) |> CycleRight
     
         match m with
-        | Move(Left,row) -> M'.SetRow(row,vector)
-        | Move(Right,row) -> M'.SetRow(row,vector)
-        | Move(Up,col) -> M'.SetColumn(col,vector)
-        | Move(Down,col) -> M'.SetColumn(col,vector)
+        | Move(Left,row) -> board'.SetRow(row,vector)
+        | Move(Right,row) -> board'.SetRow(row,vector)
+        | Move(Up,col) -> board'.SetColumn(col,vector)
+        | Move(Down,col) -> board'.SetColumn(col,vector)
 
-        M'
+        board'
 
-    let ScrambleMap (S : Matrix<double>) N k =
+    let ScrambleMap (S : Board) N shuffles =
         let directions = 
             rnd.GetValues(0,3)
-            |> Seq.take k
+            |> Seq.take shuffles
             |> Seq.map (fun n ->
                 match n with
                 | 0 -> direction.Up
                 | 1 -> direction.Down
                 | 2 -> direction.Right
                 | _ -> direction.Left)
-        let rowcols = rnd.GetValues(0,N-1) |> Seq.take k
+        let rowcols = rnd.GetValues(0,N-1) |> Seq.take shuffles
         let moves = Seq.map2 (fun direction rowcol -> Move(direction,rowcol)) directions rowcols
         (Seq.fold (fun M move -> (MakeMove M move)) S moves,moves)
