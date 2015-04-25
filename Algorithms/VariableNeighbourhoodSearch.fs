@@ -1,58 +1,64 @@
 ﻿namespace EvolutionaryAlgoritms
-open MathNet.Numerics
-open MathNet.Numerics.Distributions
-open MathNet.Numerics.LinearAlgebra
 open ToolBox
-open MoveMent
+open Model.MoveMent
+open Model.Types
 
-module VariableNeighbourhoodSearch =
-    let mutable k = 0
-    let mutable numRunsForMean = 0
-    let mutable maxIterations = 0
-    let mutable mu = 0
-    let mutable lambda = 0
-    let mutable numGenerationsBeforeMerge = 0
-    let mutable bestParents = []
-    let rand = new System.Random()
+// ##################################################
+// # Performs local search on a given Island        #
+// # Returns new Island with new individuals        #
+// # And a fitness history for the best individual. #
+// ##################################################
+
+module LocalSearch =
+    let mutable numIterations = 0
     
-    let rec loop original generation islands i =  
-        let newIslands =
-            islands
-            //Run Mu+Lambda on each individual for numGenerationsBeforeMerge times
-            |> Seq.map (fun island -> 
-                let mutable newIsland = []
-                for generation in 0..numGenerationsBeforeMerge do
-                    let (tmpIsland,_) = (MuCommaLambda.runWithParents original island maxIterations mu lambda)
-                    newIsland <- tmpIsland
-                newIsland)
-            //Merge the best individual from each Island to the next in the List.
-            |> Seq.map (fun island -> 
-                bestParents <- List.append bestParents [island.Head]
-                island)
-            |> Seq.map (fun island -> List.append island [bestParents.[rand.Next(0,List.length bestParents)]])
-        //Reloop or Stop
-        if i < maxIterations then
-            printf "%A\n" i
-            loop original (generation+1) newIslands (i+1)
+    let rec loop (individual : Individual) fitnesses goal =
+        //Deconstruct the individual
+        let (fitness,board,path) = individual
+        let N = board.RowCount
+
+        //Optimisation needed!
+        let mutable tmp  = board
+        let mutable board' = board
+        let mutable move = Move(Left,0)
+        let mutable fitness' = FitTest.doFitTest board goal
+        for i in 0..N-1 do
+            for j in 0..3 do
+                let move' =
+                    match j with
+                    |0 -> Move(Left,i)
+                    |1 -> Move(Right,i)
+                    |2 -> Move(Up,i)
+                    |_ -> Move(Down,i)
+                tmp <- MakeMove board move
+                let fitness' = FitTest.doFitTest board goal
+                if(fitness' < fitness) then
+                    board' <- tmp
+                    move <- move'
+        
+        //If taking a step reduced the fitness, try to take another.
+        if board' <> board then
+            let individual' = fitness',board',List.append path [move]
+            let fitnesses' = List.append fitnesses [fitness]
+            loop individual' fitnesses' goal
         else
-        //Returns all the Islands
-            newIslands
+            (individual,fitnesses)
 
-
-    let runWithArguments (M : Matrix<double>) S k' numRunsForMean' maxIterations' mu' lambda' numGenerationsBeforeMerge' = 
-        k <- k'
-        numRunsForMean <- numRunsForMean'
-        maxIterations <- maxIterations'
-        mu <- mu'
-        lambda <- lambda'
-        numGenerationsBeforeMerge <- numGenerationsBeforeMerge'
-        //Generate n islands with a random individual
-        let n = 4
-        let islands = 
-            seq {0..n}
-            |> Seq.map (fun _ -> 
-                let (parent,_) = (MuCommaLambda.runWithArguments M S maxIterations mu lambda)
-                parent)
-            |> List.ofSeq
-        //loop them
-        loop M 0 islands 0
+    let run (island : Island) (goal : Board) (configuration : RunConfiguration) =
+        // Ignore the mutation type
+        let (population : Population , _) = island
+        // Perform local search on each individual on the Island.
+        // Since the local search only runs on a single individual, we need to handle the populations general fitness differently
+        // Pass the two sequences together. Return af sequence of touples, remake this as two new Lists.
+        let (individuals , fitnesses) = population
+        let population' = List.ofSeq (
+                            population
+                            ||> Seq.map2 (fun individual fitness -> loop individual [fitness] goal))
+        // The function returns a sequence of individuals and a sequence of lists of fitnesses
+        // Since a Population is defined as a sequence of individuals, and a sequence containing the best individuals fitness
+        // We will need to convert them back
+        let (_,fitness') = population'.Head
+        let (individuals') = List.ofSeq (population' |> Seq.map (fun (individual , _) -> individual))
+        // Return the new Island.
+        let island' : Island = (individuals',fitness') , Mutation.LocalSearch
+        island'

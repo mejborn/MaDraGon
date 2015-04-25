@@ -15,7 +15,6 @@ module LocalSearch =
     let rec loop (individual : Individual) fitnesses goal =
         //Deconstruct the individual
         let (fitness,board,path) = individual
-        printfn "Local Seach : Current fitness: %A" fitness
         let N = board.RowCount
 
         //Optimisation needed!

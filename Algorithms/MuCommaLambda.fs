@@ -1,9 +1,16 @@
 ﻿namespace EvolutionaryAlgoritms
 open MathNet.Numerics
 open MathNet.Numerics.Distributions
-open MathNet.Numerics.LinearAlgebra
 open ToolBox
-open MoveMent
+open Model.MoveMent
+open Model.Types
+
+// ##################################################
+// # Performs Mu , Lambda on a given Island         #
+// # Returns new Island with new individuals        #
+// # And a fitness history for the best individual. #
+// # Requires that lambda > mu, and mu,lambda > 0   #
+// ##################################################
 
 module MuCommaLambda = 
     type System.Random with
@@ -11,53 +18,42 @@ module MuCommaLambda =
         member this.GetValues(minValue, maxValue) =
             Seq.initInfinite (fun _ -> this.Next(minValue, maxValue))
     let rnd = System.Random()
-    
-    let mutable mu = 3
-    let mutable lambda = 3
-    let mutable numIterations = 0
 
-    let rec loop (original : Matrix<double>) (parents : List<(float * Matrix<double> * seq<MoveMent.move>)>) (fitnessList : List<double>) (maxIterations : int) =
-        let N = original.RowCount
-        //Generate lambda new children from random mu parents
-        let mutable newGeneration = []
-
-        //Generate lambda random mutation from random parent. Return as list of fitness,mutation,Sequence of moves.
-        for i in 0..lambda do
-            //Generate random solution:
-            let k = Poisson.Sample(1.0)
-            let (_,parent,moves) = parents.[rnd.Next(0,parents.Length-1)]
-            let (mutation,newMoves) = MoveMent.ScrambleMap parent parent.RowCount (Poisson.Sample(1.0))
-            let fitness = FitTest.doFitTest original mutation
-            newGeneration <- List.append newGeneration [(fitness,mutation,(Seq.append moves newMoves))]
-        //Keep mu best generations
-        let newParents =
-                        newGeneration
-                        |> Seq.sortBy (fun (fitness,_,_) -> fitness)
-                        |> if (newGeneration.Length > mu-1) then 
-                            Seq.take mu else 
-                            Seq.take newGeneration.Length
-                        //|> Seq.map (fun (_,subject,_) -> subject)
-                        |> List.ofSeq
-            
-        //Generate new fitness list from the best available parent
-        let mutable newFitnessList = fitnessList
-        let (_,bestParent,_) = newParents.Head
-        newFitnessList <- List.append newFitnessList [FitTest.doFitTest original bestParent]
-        //Run the loop again
-        numIterations <- numIterations + 1
-        if (numIterations = maxIterations) then
-            (newParents,newFitnessList)
+    let rec loop (population : Population) goal configuration iterations =
+        // De-construct the configuration
+        let (_,_,mu,lambda,maxIterations) = configuration
+        let (parents,fitnesses) = population
+        // Generate lambda new children from parents in the population
+        let parents' : List<Individual> = 
+            List.ofSeq(
+                //Since lambda is defined as a double. It has to be cast as Int in this case
+                seq {0..(int)lambda}
+                |> Seq.map (fun _ -> 
+                              let k = Poisson.Sample(1.0)
+                              let parent = parents.[rnd.Next(0,parents.Length-1)]
+                              // The new parent will carry new fitness, new board and new path
+                              let (fitness,board,path) = parent
+                              let (board',tmp) = ScrambleMap board board.RowCount k
+                              let path' = List.append path tmp
+                              let fitness' = FitTest.doFitTest board' goal
+                              let parent' = (fitness',board',path')
+                              parent')
+                // Sort by fitness, and keep the mu best.
+                |> Seq.sortBy (fun (fitness,_,_) -> fitness)
+                |> Seq.take mu)
+        // Generate a new Population with the best available fitness.
+        let (fitness',_,_) = parents'.Head
+        let fitnesses' = List.append fitnesses [fitness']
+        let population' : Population = (parents',fitnesses')
+        
+        let iterations' = iterations + 1    
+        if (fitness' = 0.0 || iterations > maxIterations) then
+            population' , MuPlusLambda
         else
-            loop original newParents newFitnessList maxIterations
+            loop population' goal configuration iterations'
 
-    let runWithArguments original solution maxIterations mu' lambda' =
-        numIterations <- 0
-        mu <- mu'
-        lambda <- lambda'
-        loop original [0.0 ,solution , Seq.empty] [] maxIterations
-
-    let runWithParents original parents maxIterations mu' lambda' = 
-        numIterations <- 0
-        mu <- mu'
-        lambda <- lambda'
-        loop original parents [] maxIterations
+    let run (island : Island) (goal : Board) (configuration : RunConfiguration) =
+        // Ignore the mutation type
+        let (population : Population , _) = island
+        // Since Mu , Lambda is family tree dependant, the whole Population can be sent to the algorithm.
+        loop population goal configuration 0

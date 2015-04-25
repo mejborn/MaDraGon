@@ -9,6 +9,7 @@ open Model.Types
 // # Performs Mu Plus Lambda on a given Island      #
 // # Returns new Island with new individuals        #
 // # And a fitness history for the best individual. #
+// # Requires that mu,lambda > 0                    #
 // ##################################################
 
 module MuPlusLambda = 
@@ -17,7 +18,6 @@ module MuPlusLambda =
         member this.GetValues(minValue, maxValue) =
             Seq.initInfinite (fun _ -> this.Next(minValue, maxValue))
     let rnd = System.Random()
-    
 
     let rec loop (population : Population) goal configuration iterations =
         // De-construct the configuration
