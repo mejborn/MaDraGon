@@ -1,0 +1,33 @@
+﻿<Properties>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Model/AssemblyInfo.fs">
+    <Files>
+      <File FileName="Madragon/Program.fs" Line="1" Column="1" />
+      <File FileName="Madragon/RunSimulation.fs" Line="1" Column="1" />
+      <File FileName="Model/Movement.fs" Line="3" Column="10" />
+      <File FileName="Model/AssemblyInfo.fs" Line="1" Column="1" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State expanded="True">
+          <Node name="Algorithms" expanded="True" />
+          <Node name="Fitnesstest" expanded="True" />
+          <Node name="Madragon" expanded="True" />
+          <Node name="Model" expanded="True">
+            <Node name="AssemblyInfo.fs" selected="True" />
+          </Node>
+        </State>
+      </Pad>
+      <Pad Id="ClassPad">
+        <State expanded="True" selected="True" />
+      </Pad>
+      <Pad Id="MonoDevelop.Debugger.WatchPad">
+        <State />
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>

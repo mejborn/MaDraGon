@@ -1,15 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.30501.0
-MinimumVisualStudioVersion = 10.0.40219.1
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "MaDraGon", "MaDraGonFSharp\MaDraGon.fsproj", "{45C0E41D-05B7-474A-8581-BA9BF71A70B5}"
+# Visual Studio 2012
+Project("{4925A630-B079-445d-BCD4-3A9C94FE9307}") = "Algorithms", "Algorithms\Algorithms.fsproj", "{4D1D9310-CEB4-4F64-A791-549932814063}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Library", "FitnessTest\Library.fsproj", "{23695192-2EA8-4D25-848E-AF8A7E41B9E4}"
+Project("{4925A630-B079-445d-BCD4-3A9C94FE9307}") = "Fitnesstest", "Fitnesstest\Fitnesstest.fsproj", "{0786CFC0-54B4-4D65-9B55-4669B9C33CC4}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Model", "Model\Model.fsproj", "{177FC109-7883-4A75-9156-99D23E313C03}"
+Project("{4925A630-B079-445d-BCD4-3A9C94FE9307}") = "Madragon", "Madragon\Madragon.fsproj", "{AD7D82EF-344B-414B-86AB-F31A17C4B2D9}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Algorithms", "Algorithms\Algorithms.fsproj", "{9D43161E-C44D-46B3-9C7D-ADE6BF63E107}"
+Project("{4925A630-B079-445d-BCD4-3A9C94FE9307}") = "Model", "Model\Model.fsproj", "{D43E6354-6E7F-4C99-ADAA-9451C1445A6A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,22 +15,25 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{45C0E41D-05B7-474A-8581-BA9BF71A70B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{45C0E41D-05B7-474A-8581-BA9BF71A70B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{45C0E41D-05B7-474A-8581-BA9BF71A70B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{45C0E41D-05B7-474A-8581-BA9BF71A70B5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{23695192-2EA8-4D25-848E-AF8A7E41B9E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{23695192-2EA8-4D25-848E-AF8A7E41B9E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{23695192-2EA8-4D25-848E-AF8A7E41B9E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{23695192-2EA8-4D25-848E-AF8A7E41B9E4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{177FC109-7883-4A75-9156-99D23E313C03}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{177FC109-7883-4A75-9156-99D23E313C03}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{177FC109-7883-4A75-9156-99D23E313C03}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{177FC109-7883-4A75-9156-99D23E313C03}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9D43161E-C44D-46B3-9C7D-ADE6BF63E107}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9D43161E-C44D-46B3-9C7D-ADE6BF63E107}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9D43161E-C44D-46B3-9C7D-ADE6BF63E107}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9D43161E-C44D-46B3-9C7D-ADE6BF63E107}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0786CFC0-54B4-4D65-9B55-4669B9C33CC4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0786CFC0-54B4-4D65-9B55-4669B9C33CC4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0786CFC0-54B4-4D65-9B55-4669B9C33CC4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0786CFC0-54B4-4D65-9B55-4669B9C33CC4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4D1D9310-CEB4-4F64-A791-549932814063}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4D1D9310-CEB4-4F64-A791-549932814063}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4D1D9310-CEB4-4F64-A791-549932814063}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4D1D9310-CEB4-4F64-A791-549932814063}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AD7D82EF-344B-414B-86AB-F31A17C4B2D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD7D82EF-344B-414B-86AB-F31A17C4B2D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AD7D82EF-344B-414B-86AB-F31A17C4B2D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AD7D82EF-344B-414B-86AB-F31A17C4B2D9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D43E6354-6E7F-4C99-ADAA-9451C1445A6A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D43E6354-6E7F-4C99-ADAA-9451C1445A6A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D43E6354-6E7F-4C99-ADAA-9451C1445A6A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D43E6354-6E7F-4C99-ADAA-9451C1445A6A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = Madragon\Madragon.fsproj
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

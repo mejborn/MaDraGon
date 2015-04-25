@@ -1,4 +1,5 @@
-﻿open MathNet.Numerics
+﻿namespace Madragon
+open MathNet.Numerics
 open MathNet.Numerics.LinearAlgebra
 open FSharp.Collections.ParallelSeq
 open ToolBox

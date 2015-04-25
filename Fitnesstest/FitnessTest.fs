@@ -3,8 +3,6 @@ open MathNet.Numerics
 open MathNet.Numerics.Distributions
 open MathNet.Numerics.LinearAlgebra
 open FSharp.Collections.ParallelSeq
-open FSharp.Charting
-open System.Drawing
 
 module public FitTest =
     let Hamming (original : double[][]) solution =
