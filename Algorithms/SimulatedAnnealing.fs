@@ -1,7 +1,6 @@
 ﻿namespace EvolutionaryAlgoritms
 open MathNet.Numerics
 open MathNet.Numerics.Distributions
-open MathNet.Numerics.LinearAlgebra
 open Model.MoveMent
 open Model.Types
 open ToolBox
@@ -53,8 +52,8 @@ module SimulatedAnnealing =
     let run (island : Island) (goal : Board) (configuration : RunConfiguration) =
         // Ignore the mutation type
         let (population : Population , _) = island
-        // Perform local search on each individual on the Island.
-        // Since the local search only runs on a single individual, we need to handle the populations general fitness differently
+        // Perform Simulated Annealing on each individual on the Island.
+        // Since the Simulated Annealing only runs on a single individual, we need to handle the populations general fitness differently
         // Pass the two sequences together. Return af sequence of touples, remake this as two new Lists.
         let (individuals , fitnesses) = population
         let (temperature,_,_,_,_) = configuration
