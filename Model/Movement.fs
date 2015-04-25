@@ -49,5 +49,5 @@ module public MoveMent =
                 | 2 -> direction.Right
                 | _ -> direction.Left)
         let rowcols = rnd.GetValues(0,N-1) |> Seq.take shuffles
-        let moves = Seq.map2 (fun direction rowcol -> Move(direction,rowcol)) directions rowcols
+        let moves = List.ofSeq (Seq.map2 (fun direction rowcol -> Move(direction,rowcol)) directions rowcols)
         (Seq.fold (fun M move -> (MakeMove M move)) S moves,moves)

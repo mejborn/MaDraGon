@@ -3,6 +3,12 @@ open ToolBox
 open Model.MoveMent
 open Model.Types
 
+// ##################################################
+// # Performs local search on a given Island        #
+// # Returns new Island with new individuals        #
+// # And a fitness history for the best individual. #
+// ##################################################
+
 module LocalSearch =
     let mutable numIterations = 0
     

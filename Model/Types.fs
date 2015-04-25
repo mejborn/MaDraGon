@@ -19,7 +19,7 @@ module public Types =
     type Temperature = double
     type Cooling = double
     type Mu = int
-    type Lambda = int
+    type Lambda = float
     type MaxIterations = int
     type RunConfiguration = Temperature * Cooling * Mu * Lambda * MaxIterations
 

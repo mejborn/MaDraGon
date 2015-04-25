@@ -2,8 +2,15 @@
 open MathNet.Numerics
 open MathNet.Numerics.Distributions
 open MathNet.Numerics.LinearAlgebra
+open Model.MoveMent
+open Model.Types
 open ToolBox
-open MoveMent
+
+// ##################################################
+// # Performs Simulated Annealing on a given Island #
+// # Returns new Island with new individuals        #
+// # And a fitness history for the best individual. #
+// ##################################################
 
 module SimulatedAnnealing =
     type System.Random with
@@ -12,60 +19,53 @@ module SimulatedAnnealing =
             Seq.initInfinite (fun _ -> this.Next(minValue, maxValue))
 
     let rnd = System.Random()
-    let lambda = Constants.E
-    let mutable numIterations = 0
-    let mutable numIterationsWithoutMove = 0
-    let maxIterationsWithoutMove = 1000
-    let mutable originalSolution : Matrix<double> = DenseMatrix.init 1 1 (fun i j -> 0.0)
-    let mutable originalTemperature = 0.0
 
-    let rec loop (original : Matrix<double>) (solution : Matrix<double>) (fitnessList : List<double>) temperature cooling maxIterations =
-        let N = original.RowCount
-        numIterations <- numIterations + 1
-        //Calculate current solutions fitness:
-        let Fitness = FitTest.doFitTest original solution
-
+    let rec loop (individual : Individual) fitnesses goal configuration iterations temperature =
+        //The posibility that a solution has been found, and the algorithm is called again may be there.
+        let (fitness,board,path) = individual
+        let N = board.RowCount
+        let (_,cooling,_,lambda,maxIterations) = configuration
+        
         //Generate random solution:
         let k = Poisson.Sample(lambda)
+        let (board',tmp) = ScrambleMap board N k
+        let path' = List.append path tmp
         
-        let (NewSolution,moves) =
-            MoveMent.ScrambleMap solution N k
-        
-        //Generate new fitness from data      
-        let NewFitness =
-            FitTest.doFitTest original NewSolution
-        let NewTemperature =
-            temperature-temperature*cooling
-        let NewFitnessList =
-            List.append fitnessList [NewFitness]
+        //Generate new values from solution
+        let fitness' = FitTest.doFitTest board' goal
+        let fitnesses' = List.append fitnesses [fitness']
+        let temperature' = temperature-temperature*cooling
+        let individual' = (fitness',board',path')
+        let iterations' = iterations + 1
 
         let AcceptanceProbability =
-            if (Fitness > NewFitness) then
-                1.0
-            else if (Fitness-NewFitness = 0.0) then
-                0.25
-            else
-                Constants.E ** ((Fitness-NewFitness)/temperature)
+            if (fitness > fitness') then 1.0
+            else if (fitness-fitness' = 0.0) then 0.25
+            else Constants.E ** ((fitness-fitness')/temperature)
 
-        if (fitnessList.Length <> 0) && (Fitness >= fitnessList.[fitnessList.Length-1]) then
-                numIterationsWithoutMove <- numIterationsWithoutMove + 1
-
-        if NewFitness = 0.0 then
-            printfn "%A %A" original NewSolution
-            NewFitnessList
-        else if numIterationsWithoutMove > maxIterationsWithoutMove then
-            //restart
-            printf "Restarting at iteration no: %A\n" numIterations
-            numIterationsWithoutMove <- 0
-            loop original originalSolution [] originalTemperature cooling maxIterations
-        else if(rnd.NextDouble() <= AcceptanceProbability && numIterations < maxIterations) then
-            loop original NewSolution NewFitnessList NewTemperature cooling maxIterations
+        if (fitness' = 0.0 || iterations > maxIterations) then //Stop the algorithm
+            individual' , fitnesses'
+        else if(rnd.NextDouble() <= AcceptanceProbability) then //Keep the new individual
+            loop individual' fitnesses' goal configuration iterations' temperature'
         else
-            loop original solution NewFitnessList NewTemperature cooling maxIterations
-       
+            loop individual fitnesses goal configuration iterations' temperature' //Throw out the new individual
 
-    let runWithArguments original solution temperature cooling maxIterations =
-        originalTemperature <- temperature
-        originalSolution <- solution
-        numIterations <- 0
-        loop original solution [] temperature cooling maxIterations
+    let run (island : Island) (goal : Board) (configuration : RunConfiguration) =
+        // Ignore the mutation type
+        let (population : Population , _) = island
+        // Perform local search on each individual on the Island.
+        // Since the local search only runs on a single individual, we need to handle the populations general fitness differently
+        // Pass the two sequences together. Return af sequence of touples, remake this as two new Lists.
+        let (individuals , fitnesses) = population
+        let (temperature,_,_,_,_) = configuration
+        let population' = List.ofSeq (
+                            population
+                            ||> Seq.map2 (fun individual fitness -> loop individual [fitness] goal configuration 0 temperature))
+        // The function returns a sequence of individuals and a sequence of lists of fitnesses
+        // Since a Population is defined as a sequence of individuals, and a sequence containing the best individuals fitness
+        // We will need to convert them back
+        let (_,fitness') = population'.Head
+        let (individuals') = List.ofSeq (population' |> Seq.map (fun (individual , _) -> individual))
+        // Return the new Island.
+        let island' : Island = (individuals',fitness') , Mutation.LocalSearch
+        island'
