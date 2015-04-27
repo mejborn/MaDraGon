@@ -1,7 +1,7 @@
-﻿namespace EvolutionaryAlgoritms
+﻿namespace Algorithms
 open MathNet.Numerics
 open MathNet.Numerics.Distributions
-open ToolBox
+open Model
 open Model.MoveMent
 open Model.Types
 
@@ -19,9 +19,9 @@ module MuCommaLambda =
             Seq.initInfinite (fun _ -> this.Next(minValue, maxValue))
     let rnd = System.Random()
 
-    let rec loop (population : Population) goal configuration iterations =
-        // De-construct the configuration
-        let (_,_,mu,lambda,maxIterations) = configuration
+    let rec loop (population : Population) goal (configuration : RunConfiguration) iterations =
+        // De-construct the configuration and population
+        let (_ , _ , _ , lambda , mu , maxIterations , _ , _) = configuration
         let (parents,fitnesses) = population
         // Generate lambda new children from parents in the population
         let parents' : List<Individual> = 
@@ -35,7 +35,7 @@ module MuCommaLambda =
                               let (fitness,board,path) = parent
                               let (board',tmp) = ScrambleMap board board.RowCount k
                               let path' = List.append path tmp
-                              let fitness' = FitTest.doFitTest board' goal
+                              let fitness' = FitnessTest.run board' goal configuration
                               let parent' = (fitness',board',path')
                               parent')
                 // Sort by fitness, and keep the mu best.
@@ -52,8 +52,8 @@ module MuCommaLambda =
         else
             loop population' goal configuration iterations'
 
-    let run (island : Island) (goal : Board) (configuration : RunConfiguration) =
-        // Ignore the mutation type
-        let (population : Population , _) = island
+    let run (island : Island) (goal : Board) =
+        // Deconstruct the Island
+        let (population , configuration) = island
         // Since Mu , Lambda is family tree dependant, the whole Population can be sent to the algorithm.
         loop population goal configuration 0

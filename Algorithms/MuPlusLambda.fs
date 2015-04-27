@@ -1,7 +1,7 @@
-﻿namespace EvolutionaryAlgoritms
+﻿namespace Algorithms
 open MathNet.Numerics
 open MathNet.Numerics.Distributions
-open ToolBox
+open Model
 open Model.MoveMent
 open Model.Types
 
@@ -21,7 +21,7 @@ module MuPlusLambda =
 
     let rec loop (population : Population) goal configuration iterations =
         // De-construct the configuration
-        let (_,_,mu,lambda,maxIterations) = configuration
+        let (_ , _ , _ , lambda , mu , maxIterations , _ , _) = configuration
         let (parents,fitnesses) = population
         // Generate lambda new children from parents in the population
         let parents' : List<Individual> = 
@@ -35,7 +35,7 @@ module MuPlusLambda =
                               let (fitness,board,path) = parent
                               let (board',tmp) = ScrambleMap board board.RowCount k
                               let path' = List.append path tmp
-                              let fitness' = FitTest.doFitTest board' goal
+                              let fitness' = FitnessTest.run board' goal configuration
                               let parent' = (fitness',board',path')
                               parent')
                 // Add the new parents to the population buffer, sort by fitness, and keep the mu best.
@@ -54,7 +54,7 @@ module MuPlusLambda =
             loop population' goal configuration iterations'
 
     let run (island : Island) (goal : Board) (configuration : RunConfiguration) =
-        // Ignore the mutation type
+        // Deconstruct the island
         let (population : Population , _) = island
         // Since Mu plus Lambda is family tree dependant, the whole Population can be sent to the algorithm.
         loop population goal configuration 0

@@ -49,7 +49,6 @@
   </Choose>
   <Import Project="$(FSharpTargetsPath)" />
   <ItemGroup>
-    <Compile Include="AssemblyInfo.fs" />
     <Compile Include="LocalSearch.fs" />
     <Compile Include="MuCommaLambda.fs" />
     <Compile Include="MuPlusLambda.fs" />
@@ -61,12 +60,6 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Numerics" />
-    <Reference Include="Model">
-      <HintPath>..\Model\bin\Debug\Model.dll</HintPath>
-    </Reference>
-    <Reference Include="Fitnesstest">
-      <HintPath>..\Fitnesstest\bin\Debug\Fitnesstest.dll</HintPath>
-    </Reference>
     <Reference Include="FSharp.Collections.ParallelSeq">
       <HintPath>..\packages\FSharp.Collections.ParallelSeq.1.0.2\lib\net40\FSharp.Collections.ParallelSeq.dll</HintPath>
     </Reference>
@@ -80,6 +73,13 @@
       <HintPath>..\packages\MathNet.Numerics.FSharp.3.6.0\lib\net40\MathNet.Numerics.FSharp.dll</HintPath>
     </Reference>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Model\Model.fsproj">
+      <Name>Model</Name>
+      <Project>{d43e6354-6e7f-4c99-adaa-9451c1445a6a}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+  </ItemGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
@@ -87,7 +87,4 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-  <ItemGroup>
-    <None Include="RunSimulation.fs" />
-  </ItemGroup>
 </Project>

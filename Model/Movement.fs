@@ -41,6 +41,7 @@ module public MoveMent =
     let ScrambleMap (S : Board) N shuffles =
         let directions = 
             rnd.GetValues(0,3)
+
             |> Seq.take shuffles
             |> Seq.map (fun n ->
                 match n with

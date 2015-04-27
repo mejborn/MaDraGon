@@ -49,8 +49,8 @@
   </Choose>
   <Import Project="$(FSharpTargetsPath)" />
   <ItemGroup>
-    <Compile Include="AssemblyInfo.fs" />
     <Compile Include="Types.fs" />
+    <Compile Include="FitnessTest.fs" />
     <Compile Include="Movement.fs" />
     <Compile Include="World.fs" />
   </ItemGroup>
@@ -70,9 +70,6 @@
     </Reference>
     <Reference Include="FSharp.Core">
       <HintPath>..\packages\FSharp.Core.3.1.2.1\lib\net40\FSharp.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Fitnesstest">
-      <HintPath>..\Fitnesstest\bin\Debug\Fitnesstest.dll</HintPath>
     </Reference>
   </ItemGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

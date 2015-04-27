@@ -1,57 +1,59 @@
-﻿namespace Madragon
-open MathNet.Numerics
+﻿open Model
+open Model.Types
+open Model.MoveMent
 open MathNet.Numerics.LinearAlgebra
-open FSharp.Collections.ParallelSeq
-open ToolBox
-open MoveMent
-open Madragon.RunSimulation
-open EvolutionaryAlgoritms
-open Madragon.World
-type System.Random with
-    /// Generates an infinite sequence of random numbers within the given range.
-    member this.GetValues(minValue, maxValue) =
-        Seq.initInfinite (fun _ -> this.Next(minValue, maxValue))
 
-let rnd = System.Random()
+let DoMutation (world : World) goal =
+    List.ofSeq(
+        world
+        |> Seq.map (fun island ->
+            // Deconstruct the island and the configuration
+            let population , configuration = island
+            let (_ , _ , _ , _ , _ , _ , _ , mutation) = configuration
+            match mutation with
+            // The algorithms expect an Island and a goal, and will return an Island
+            |Mutation.LocalSearch -> island
+            |Mutation.MuPlusLambda -> island//EvolutionaryAlgorithms.RunSimulation.localSearch island
+            |Mutation.SimulatedAnnealing -> island//EvolutionaryAlgorithms.RunSimulation.localSearch island
+            |Mutation.VariableNeighbourhoodSearch -> island//EvolutionaryAlgorithms.RunSimulation.localSearch island
+        ))
 
 [<EntryPoint>]
 let main argv = 
-    let N = 10
-    let k = 30
-    let cooling = 0.01
-
-    let maxIterations = 500
+    // General Setup
     let numRunsForMean = 50
+    let N = 10 //Board size
+    let k = 30 //Number of shuffles
+    let board : Board = DenseMatrix.init N N (fun i j ->  (double) ((i+j) % 2))
+    let board',moves = ScrambleMap board N k
+    let maxIterations = 1000 // Maximum iterations an algorithm can work on an Island
 
-    let M : Matrix<double> = DenseMatrix.init N N (fun i j -> if (i = N/2 || i = N/2-1 || i= N/2+1 || j = N/2) then 1.0 else 0.0)
-    let (S,realSolution) = MoveMent.ScrambleMap M N k
-    printfn "%A" M
-    printfn "%A" S
+    // Simulation configuration
+    let simulation = Simulation.Single
+    let mutation = Mutation.LocalSearch
+    let fitTest = FitTest.Hamming
 
+    // Simulation specific configuration
+    // Simulated Annealing
+    let temperature = 100.0
+    let cooling = 0.01
+    let lambda = 1.0
+    // Mu + Lambdas
+    let mu = 5
+    let lambda' = 5
+    let configuration : RunConfiguration = (temperature,cooling,lambda,lambda',mu,maxIterations,fitTest,mutation)
 
-//    Try with Local Search
-//    localSearch M S k
-    
-//    //Run Simulated Annealing with t temperature
-//    for t in 100..100 do
-//        SimulatedAnnealing M S k numRunsForMean maxIterations (float t) cooling
-    
-    //Run Mu + Lambda
-//    for mu in 5..5 do
-//        for lambda in 5..5 do
-//            MuPlusLambda M S k numRunsForMean maxIterations mu lambda
-
-    //Run Mu , Lambda
-    //Lambda must be equal or greater than mu
-//    for mu in 1..10 do
-//        for lambda in mu..10 do
-//            MuCommaLambda M S k numRunsForMean maxIterations mu lambda
-    //Run Variable Neighbourhood Search
-    let lambda = 4
-    let mu = 4
-    let numGenerations = 5
-    VariableNeighbourhoodSeach M S k numRunsForMean maxIterations mu lambda numGenerations
-
-
+    // Create world from configuration
+    let world : World = World.CreateWorld board board' simulation mutation configuration 1
+    let worlds : List<World> = List.ofSeq (seq {0..numRunsForMean}
+                                |> Seq.map (fun _ -> DoMutation world board))
+    // Go trough worlds, and get means from the fitnesses
+    worlds
+    |> Seq.iteri (fun i -> 
+        islands
+        |> Seq.iteri (fun j -> 
+        let (population,_) = worlds.[i].[j]
+        let (_,fitnesses) = population
+        )
     System.Console.ReadLine()
     0

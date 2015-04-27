@@ -16,13 +16,19 @@ module public Types =
     // #####################
     // # Run configuration #
     // #####################
+    type FitTest =
+    |Hamming
+    |Manhattan
+    |Density
+    |Custom
+
     type Temperature = double
     type Cooling = double
     type Mu = int
     type Lambda = float
+    type Lambda' = int
     type MaxIterations = int
-    type RunConfiguration = Temperature * Cooling * Mu * Lambda * MaxIterations
-
+    
     // ###############
     // # World setup #
     // ###############
@@ -35,6 +41,8 @@ module public Types =
     | LocalSearch
     | VariableNeighbourhoodSearch
 
+    type RunConfiguration = Temperature * Cooling * Lambda * Lambda' * Mu * MaxIterations * FitTest * Mutation
+
     type Simulation =
     |Single
     |Multiple
@@ -46,5 +54,5 @@ module public Types =
 
     type Population = List<Individual> * List<Fitness>
 
-    type Island = Population * Mutation
+    type Island = Population * RunConfiguration
     type World = List<Island>

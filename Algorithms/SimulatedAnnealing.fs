@@ -1,9 +1,9 @@
-﻿namespace EvolutionaryAlgoritms
+﻿namespace Algorithms
 open MathNet.Numerics
 open MathNet.Numerics.Distributions
+open Model
 open Model.MoveMent
 open Model.Types
-open ToolBox
 
 // ##################################################
 // # Performs Simulated Annealing on a given Island #
@@ -16,14 +16,13 @@ module SimulatedAnnealing =
         /// Generates an infinite sequence of random numbers within the given range.
         member this.GetValues(minValue, maxValue) =
             Seq.initInfinite (fun _ -> this.Next(minValue, maxValue))
-
     let rnd = System.Random()
 
-    let rec loop (individual : Individual) fitnesses goal configuration iterations temperature =
+    let rec loop (individual : Individual) fitnesses goal (configuration : RunConfiguration) iterations temperature =
         //The posibility that a solution has been found, and the algorithm is called again may be there.
         let (fitness,board,path) = individual
         let N = board.RowCount
-        let (_,cooling,_,lambda,maxIterations) = configuration
+        let (_ , cooling , lambda , _ , _ , maxIterations , _ , _) = configuration
         
         //Generate random solution:
         let k = Poisson.Sample(lambda)
@@ -31,7 +30,7 @@ module SimulatedAnnealing =
         let path' = List.append path tmp
         
         //Generate new values from solution
-        let fitness' = FitTest.doFitTest board' goal
+        let fitness' = FitnessTest.run board' goal configuration
         let fitnesses' = List.append fitnesses [fitness']
         let temperature' = temperature-temperature*cooling
         let individual' = (fitness',board',path')
@@ -49,14 +48,13 @@ module SimulatedAnnealing =
         else
             loop individual fitnesses goal configuration iterations' temperature' //Throw out the new individual
 
-    let run (island : Island) (goal : Board) (configuration : RunConfiguration) =
-        // Ignore the mutation type
-        let (population : Population , _) = island
+    let run (island : Island) (goal : Board) =
+        let (population : Population , configuration) = island
         // Perform Simulated Annealing on each individual on the Island.
         // Since the Simulated Annealing only runs on a single individual, we need to handle the populations general fitness differently
         // Pass the two sequences together. Return af sequence of touples, remake this as two new Lists.
         let (individuals , fitnesses) = population
-        let (temperature,_,_,_,_) = configuration
+        let (temperature , _ , _ , _ , _ , _ , _ , _) = configuration
         let population' = List.ofSeq (
                             population
                             ||> Seq.map2 (fun individual fitness -> loop individual [fitness] goal configuration 0 temperature))
@@ -66,5 +64,5 @@ module SimulatedAnnealing =
         let (_,fitness') = population'.Head
         let (individuals') = List.ofSeq (population' |> Seq.map (fun (individual , _) -> individual))
         // Return the new Island.
-        let island' : Island = (individuals',fitness') , Mutation.LocalSearch
+        let island' : Island = (individuals',fitness') , configuration
         island'
