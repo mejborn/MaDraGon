@@ -5,11 +5,11 @@ open Types
 
 module public World =
     //Creates a new World to run simulations on, n = number of islands to be created.
-    //World is missing runConfiguration
-    let CreateWorld board (board' : Board) simulation mutation (configuration : RunConfiguration) n =
+    let CreateWorld board (board' : Board) simulation mutation (configuration : Configuration) n =
         let ancestor : Individual = ((FitnessTest.run board board' configuration) ,board,[])
         // Unpack the configuration
-        let temperature , cooling , mu , lambda , lambda' , maxIterations , fitTest , mutation = configuration
+        let maxIterations , fitTest , algorithm , saConfig , mplConfig = configuration
+                  
         //Create the simulation world
         let islands : World =
             //As the world is created there is only one an ancestor, Which 
@@ -25,15 +25,16 @@ module public World =
             |Simulation.All -> [for i in 0..n -> 
                                                 population,
                                                 let configuration' = 
-                                                    (temperature , cooling, mu, lambda , lambda' , maxIterations , 
+                                                    (maxIterations , 
                                                         (let fitTest = fitTest
                                                         fitTest),
-                                                        (let mutation' =
-                                                            match (i%4) with
-                                                            |0 -> Mutation.LocalSearch
-                                                            |1 -> Mutation.MuPlusLambda
-                                                            |2 -> Mutation.SimulatedAnnealing
-                                                            |_ -> Mutation.VariableNeighbourhoodSearch
-                                                        mutation'))
+                                                        (let algorithm' =
+                                                            match (i%5) with
+                                                            |0 -> Algorithm.LocalSearch
+                                                            |1 -> Algorithm.MuPlusLambda
+                                                            |2 -> Algorithm.MuCommaLambda
+                                                            |3 -> Algorithm.SimulatedAnnealing
+                                                            |_ -> Algorithm.VariableNeighbourhoodSearch
+                                                        algorithm') , saConfig , mplConfig)
                                                 configuration']
         islands

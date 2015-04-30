@@ -12,16 +12,17 @@ open Model.Types
 // # Requires that lambda > mu, and mu,lambda > 0   #
 // ##################################################
 
-module MuCommaLambda = 
+module public MuCommaLambda = 
     type System.Random with
         /// Generates an infinite sequence of random numbers within the given range.
         member this.GetValues(minValue, maxValue) =
             Seq.initInfinite (fun _ -> this.Next(minValue, maxValue))
     let rnd = System.Random()
 
-    let rec loop (population : Population) goal (configuration : RunConfiguration) iterations =
+    let rec loop (population : Population) goal (configuration : Configuration) iterations =
         // De-construct the configuration and population
-        let (_ , _ , _ , lambda , mu , maxIterations , _ , _) = configuration
+        let (maxIterations , _ , _ , _ , mplConfig) = configuration
+        let (mu,lambda) = mplConfig
         let (parents,fitnesses) = population
         // Generate lambda new children from parents in the population
         let parents' : List<Individual> = 
@@ -48,7 +49,7 @@ module MuCommaLambda =
         
         let iterations' = iterations + 1    
         if (fitness' = 0.0 || iterations > maxIterations) then
-            population' , MuPlusLambda
+            population' , configuration
         else
             loop population' goal configuration iterations'
 

@@ -11,18 +11,19 @@ open Model.Types
 // # And a fitness history for the best individual. #
 // ##################################################
 
-module SimulatedAnnealing =
+module public SimulatedAnnealing =
     type System.Random with
         /// Generates an infinite sequence of random numbers within the given range.
         member this.GetValues(minValue, maxValue) =
             Seq.initInfinite (fun _ -> this.Next(minValue, maxValue))
     let rnd = System.Random()
 
-    let rec loop (individual : Individual) fitnesses goal (configuration : RunConfiguration) iterations temperature =
+    let rec loop (individual : Individual) fitnesses goal (configuration : Configuration) iterations temperature =
         //The posibility that a solution has been found, and the algorithm is called again may be there.
         let (fitness,board,path) = individual
         let N = board.RowCount
-        let (_ , cooling , lambda , _ , _ , maxIterations , _ , _) = configuration
+        let (maxIterations , _ , _ , saConfig , _) = configuration
+        let (temperature,cooling,lambda) = saConfig
         
         //Generate random solution:
         let k = Poisson.Sample(lambda)
@@ -54,7 +55,8 @@ module SimulatedAnnealing =
         // Since the Simulated Annealing only runs on a single individual, we need to handle the populations general fitness differently
         // Pass the two sequences together. Return af sequence of touples, remake this as two new Lists.
         let (individuals , fitnesses) = population
-        let (temperature , _ , _ , _ , _ , _ , _ , _) = configuration
+        let (_ , _ , _ , saConfig , _) = configuration
+        let (temperature,_,_) = saConfig
         let population' = List.ofSeq (
                             population
                             ||> Seq.map2 (fun individual fitness -> loop individual [fitness] goal configuration 0 temperature))

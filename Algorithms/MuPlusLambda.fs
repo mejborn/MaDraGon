@@ -12,7 +12,7 @@ open Model.Types
 // # Requires that mu,lambda > 0                    #
 // ##################################################
 
-module MuPlusLambda = 
+module public MuPlusLambda = 
     type System.Random with
         /// Generates an infinite sequence of random numbers within the given range.
         member this.GetValues(minValue, maxValue) =
@@ -21,7 +21,8 @@ module MuPlusLambda =
 
     let rec loop (population : Population) goal configuration iterations =
         // De-construct the configuration
-        let (_ , _ , _ , lambda , mu , maxIterations , _ , _) = configuration
+        let (maxIterations , _ , _ , _ , mplConfig) = configuration
+        let (mu,lambda) = mplConfig
         let (parents,fitnesses) = population
         // Generate lambda new children from parents in the population
         let parents' : List<Individual> = 
@@ -49,12 +50,12 @@ module MuPlusLambda =
         
         let iterations' = iterations + 1    
         if (fitness' = 0.0 || iterations > maxIterations) then
-            population' , MuPlusLambda
+            population' , configuration
         else
             loop population' goal configuration iterations'
 
-    let run (island : Island) (goal : Board) (configuration : RunConfiguration) =
+    let run (island : Island) (goal : Board)=
         // Deconstruct the island
-        let (population : Population , _) = island
+        let (population , configuration) = island
         // Since Mu plus Lambda is family tree dependant, the whole Population can be sent to the algorithm.
         loop population goal configuration 0

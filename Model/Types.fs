@@ -35,13 +35,17 @@ module public Types =
     type Board = Matrix<double>
     type RowCol = Vector<double>
 
-    type Mutation =
+    type SAConfig = Temperature * Cooling * Lambda
+    type MPLConfig = Mu * Lambda'
+
+    type Algorithm =
     | SimulatedAnnealing
     | MuPlusLambda
+    | MuCommaLambda
     | LocalSearch
     | VariableNeighbourhoodSearch
 
-    type RunConfiguration = Temperature * Cooling * Lambda * Lambda' * Mu * MaxIterations * FitTest * Mutation
+    type Configuration = MaxIterations * FitTest * Algorithm * SAConfig * MPLConfig
 
     type Simulation =
     |Single
@@ -54,5 +58,5 @@ module public Types =
 
     type Population = List<Individual> * List<Fitness>
 
-    type Island = Population * RunConfiguration
+    type Island = Population * Configuration
     type World = List<Island>

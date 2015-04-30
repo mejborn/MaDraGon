@@ -1,6 +1,8 @@
 ﻿open Model
 open Model.Types
 open Model.MoveMent
+open Algorithms
+open FSharp.Collections.ParallelSeq
 open MathNet.Numerics.LinearAlgebra
 
 let DoMutation (world : World) goal =
@@ -8,14 +10,15 @@ let DoMutation (world : World) goal =
         world
         |> Seq.map (fun island ->
             // Deconstruct the island and the configuration
-            let population , configuration = island
-            let (_ , _ , _ , _ , _ , _ , _ , mutation) = configuration
-            match mutation with
+            let population , (configuration : Configuration) = island
+            let (_ , _ , algorithm , _ , _) = configuration
+            match algorithm with
             // The algorithms expect an Island and a goal, and will return an Island
-            |Mutation.LocalSearch -> island
-            |Mutation.MuPlusLambda -> island//EvolutionaryAlgorithms.RunSimulation.localSearch island
-            |Mutation.SimulatedAnnealing -> island//EvolutionaryAlgorithms.RunSimulation.localSearch island
-            |Mutation.VariableNeighbourhoodSearch -> island//EvolutionaryAlgorithms.RunSimulation.localSearch island
+            |Algorithm.LocalSearch -> LocalSearch.run island goal
+            |Algorithm.MuPlusLambda -> MuPlusLambda.run island goal
+            |Algorithm.MuCommaLambda -> MuCommaLambda.run island goal
+            |Algorithm.SimulatedAnnealing -> SimulatedAnnealing.run island goal
+            |Algorithm.VariableNeighbourhoodSearch -> island//EvolutionaryAlgorithms.RunSimulation.localSearch island
         ))
 
 [<EntryPoint>]
@@ -30,7 +33,7 @@ let main argv =
 
     // Simulation configuration
     let simulation = Simulation.Single
-    let mutation = Mutation.LocalSearch
+    let algorithm = Algorithm.MuPlusLambda
     let fitTest = FitTest.Hamming
 
     // Simulation specific configuration
@@ -38,22 +41,26 @@ let main argv =
     let temperature = 100.0
     let cooling = 0.01
     let lambda = 1.0
+    let saConfig = temperature , cooling , lambda
     // Mu + Lambdas
     let mu = 5
     let lambda' = 5
-    let configuration : RunConfiguration = (temperature,cooling,lambda,lambda',mu,maxIterations,fitTest,mutation)
+    let mplConfig = mu , lambda'
+    let configuration : Configuration = (maxIterations,fitTest,algorithm,saConfig,mplConfig)
 
     // Create world from configuration
-    let world : World = World.CreateWorld board board' simulation mutation configuration 1
+    let world : World = World.CreateWorld board board' simulation algorithm configuration 1
     let worlds : List<World> = List.ofSeq (seq {0..numRunsForMean}
                                 |> Seq.map (fun _ -> DoMutation world board))
     // Go trough worlds, and get means from the fitnesses
-    worlds
-    |> Seq.iteri (fun i -> 
-        islands
-        |> Seq.iteri (fun j -> 
-        let (population,_) = worlds.[i].[j]
-        let (_,fitnesses) = population
-        )
-    System.Console.ReadLine()
+    for i in 0..worlds.Length-1 do
+        let island = worlds.[i]
+        for j in 0..island.Length-1 do
+            let (population,_) = island.[j]
+            let (_,fitnesses) = population
+            let file = System.IO.File.AppendText("Output\world " + i.ToString() + " island " + j.ToString() + ".txt")
+            for i in 0..fitnesses.Length-1 do
+                file.WriteLine(i.ToString() + " " + fitnesses.[i].ToString())
+            file.Flush()
+            file.Close()
     0

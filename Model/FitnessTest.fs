@@ -96,8 +96,8 @@ module public FitnessTest =
         CalculateTotalDistance FindDistancesForAllPoints 0
             
 
-    let run (original : Board) (solution : Board) (configuration : RunConfiguration) =
-        let (_,_,_,_,_,_,fitTest,_) = configuration
+    let run (original : Board) (solution : Board) (configuration : Configuration) =
+        let (_,fitTest,_,_,_) = configuration
         let originalArray = original.ToColumnArrays()
         let solutionArray = solution.ToColumnArrays()
         match fitTest with

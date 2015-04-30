@@ -9,7 +9,7 @@ open Model.Types
 // # And a fitness history for the best individual. #
 // ##################################################
 
-module LocalSearch =
+module public LocalSearch =
     let rec loop (individual : Individual) fitnesses goal configuration =
         //Deconstruct the individual
         let (fitness,board,path) = individual
