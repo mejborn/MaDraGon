@@ -27,6 +27,7 @@ let main argv =
     let numRunsForMean = 50
     let N = 10 //Board size
     let k = 30 //Number of shuffles
+    printf "Program 30"
     let board : Board = DenseMatrix.init N N (fun i j ->  (double) ((i+j) % 2))
     let board',moves = ScrambleMap board N k
     let maxIterations = 1000 // Maximum iterations an algorithm can work on an Island

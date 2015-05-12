@@ -1,4 +1,5 @@
 ﻿namespace Model
+open MathNet.Numerics
 open MathNet.Numerics.LinearAlgebra
 open Types
 //Movement of matrices
@@ -38,10 +39,9 @@ module public MoveMent =
 
         board'
 
-    let ScrambleMap (S : Board) N shuffles =
+    let ScrambleMap (board : Board) N shuffles =
         let directions = 
             rnd.GetValues(0,3)
-
             |> Seq.take shuffles
             |> Seq.map (fun n ->
                 match n with
@@ -50,5 +50,9 @@ module public MoveMent =
                 | 2 -> direction.Right
                 | _ -> direction.Left)
         let rowcols = rnd.GetValues(0,N-1) |> Seq.take shuffles
-        let moves = List.ofSeq (Seq.map2 (fun direction rowcol -> Move(direction,rowcol)) directions rowcols)
-        (Seq.fold (fun M move -> (MakeMove M move)) S moves,moves)
+        let moves = 
+            List.ofSeq (
+                (directions,rowcols)
+                ||> Seq.map2 (fun direction rowcol -> Move(direction,rowcol)))
+        let board' : Board = (Seq.fold (fun board' move -> (MakeMove board' move)) board moves)
+        board' , moves
