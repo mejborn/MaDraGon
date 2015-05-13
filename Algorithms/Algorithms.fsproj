@@ -12,6 +12,8 @@
     <TargetFSharpCoreVersion>4.3.1.0</TargetFSharpCoreVersion>
     <Name>Algorithms</Name>
     <ProductVersion>12.0.0</ProductVersion>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -67,12 +69,13 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="mscorlib" />
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Numerics" />
     <Reference Include="FSharp.Collections.ParallelSeq">
       <HintPath>..\packages\FSharp.Collections.ParallelSeq.1.0.2\lib\net40\FSharp.Collections.ParallelSeq.dll</HintPath>
     </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Numerics" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\Model\Model.fsproj">
       <Name>Model</Name>
       <Project>{d43e6354-6e7f-4c99-adaa-9451c1445a6a}</Project>

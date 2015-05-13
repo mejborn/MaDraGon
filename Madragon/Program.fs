@@ -3,7 +3,6 @@ open Model.Types
 open Model.MoveMent
 open Algorithms
 open FSharp.Collections.ParallelSeq
-open MathNet.Numerics.LinearAlgebra
 
 let DoMutation (world : World) goal =
     List.ofSeq(
@@ -28,7 +27,18 @@ let main argv =
     let N = 10 //Board size
     let k = 30 //Number of shuffles
     printf "Program 30"
-    let board : Board = DenseMatrix.init N N (fun i j ->  (double) ((i+j) % 2))
+    let board : Board =
+        [[0.0;0.0;0.0;1.0;1.0;1.0;1.0;0.0;0.0;0.0];
+        [0.0;0.0;1.0;1.0;1.0;1.0;1.0;1.0;0.0;0.0];
+        [0.0;0.0;1.0;1.0;1.0;1.0;1.0;1.0;0.0;0.0];
+        [0.0;0.0;1.0;1.0;1.0;1.0;1.0;1.0;0.0;0.0];
+        [0.0;0.0;1.0;1.0;1.0;1.0;1.0;1.0;0.0;0.0];
+        [0.0;0.0;1.0;1.0;1.0;1.0;1.0;1.0;0.0;0.0];
+        [0.0;0.0;1.0;1.0;1.0;1.0;1.0;1.0;0.0;0.0];
+        [0.0;0.0;1.0;1.0;1.0;1.0;1.0;1.0;0.0;0.0];
+        [0.0;0.0;1.0;1.0;1.0;1.0;1.0;1.0;0.0;0.0];
+        [0.0;0.0;1.0;1.0;1.0;1.0;1.0;1.0;0.0;0.0]]
+
     let board',moves = ScrambleMap board N k
     let maxIterations = 1000 // Maximum iterations an algorithm can work on an Island
 
