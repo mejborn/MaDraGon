@@ -1,17 +1,15 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{4D1D9310-CEB4-4F64-A791-549932814063}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>Algorithms</RootNamespace>
     <AssemblyName>Algorithms</AssemblyName>
     <TargetFSharpCoreVersion>4.3.1.0</TargetFSharpCoreVersion>
     <Name>Algorithms</Name>
-    <ProductVersion>12.0.0</ProductVersion>
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -22,7 +20,8 @@
     <DefineConstants>DEBUG</DefineConstants>
     <WarningLevel>3</WarningLevel>
     <ConsolePause>false</ConsolePause>
-    <PlatformTarget />
+    <PlatformTarget>
+    </PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -31,7 +30,8 @@
     <OutputPath>bin\Release</OutputPath>
     <WarningLevel>3</WarningLevel>
     <ConsolePause>false</ConsolePause>
-    <PlatformTarget />
+    <PlatformTarget>
+    </PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <PropertyGroup>
@@ -60,24 +60,23 @@
     <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="MathNet.Numerics">
-      <HintPath>..\packages\MathNet.Numerics.3.7.0\lib\net40\MathNet.Numerics.dll</HintPath>
-    </Reference>
-    <Reference Include="MathNet.Numerics.FSharp">
-      <HintPath>..\packages\MathNet.Numerics.FSharp.3.7.0\lib\net40\MathNet.Numerics.FSharp.dll</HintPath>
-    </Reference>
     <Reference Include="mscorlib" />
     <Reference Include="FSharp.Collections.ParallelSeq">
       <HintPath>..\packages\FSharp.Collections.ParallelSeq.1.0.2\lib\net40\FSharp.Collections.ParallelSeq.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Numerics" />
+    <Reference Include="MathNet.Numerics">
+      <HintPath>..\packages\MathNet.Numerics.Signed.3.7.0\lib\net40\MathNet.Numerics.dll</HintPath>
+    </Reference>
+    <Reference Include="MathNet.Numerics.FSharp">
+      <HintPath>..\packages\MathNet.Numerics.FSharp.Signed.3.7.0\lib\net40\MathNet.Numerics.FSharp.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Model\Model.fsproj">
       <Name>Model</Name>
-      <Project>{d43e6354-6e7f-4c99-adaa-9451c1445a6a}</Project>
-      <Private>True</Private>
+      <Project>{D43E6354-6E7F-4C99-ADAA-9451C1445A6A}</Project>
     </ProjectReference>
   </ItemGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

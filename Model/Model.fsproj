@@ -1,11 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{d43e6354-6e7f-4c99-adaa-9451c1445a6a}</ProjectGuid>
+    <ProjectGuid>{D43E6354-6E7F-4C99-ADAA-9451C1445A6A}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>Algorithms</RootNamespace>
     <AssemblyName>Model</AssemblyName>
@@ -38,21 +37,19 @@
       <HintPath>..\packages\FSharp.Collections.ParallelSeq.1.0.2\lib\net40\FSharp.Collections.ParallelSeq.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="MathNet.Numerics">
-      <HintPath>..\packages\MathNet.Numerics.3.7.0\lib\net40\MathNet.Numerics.dll</HintPath>
+    <Reference Include="mscorlib" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="FSharp.Core, Version=4.3.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <Private>True</Private>
     </Reference>
     <Reference Include="MathNet.Numerics.FSharp">
       <HintPath>..\packages\MathNet.Numerics.FSharp.3.7.0\lib\net40\MathNet.Numerics.FSharp.dll</HintPath>
-      <Private>True</Private>
     </Reference>
-    <Reference Include="mscorlib" />
-    <Reference Include="FSharp.Core, Version=$(TargetFSharpCoreVersion), Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <Private>True</Private>
+    <Reference Include="MathNet.Numerics">
+      <HintPath>..\packages\MathNet.Numerics.3.7.0\lib\net40\MathNet.Numerics.dll</HintPath>
     </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Numerics" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Script.fsx" />

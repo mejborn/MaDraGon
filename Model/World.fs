@@ -5,8 +5,8 @@ open Types
 
 module public World =
     //Creates a new World to run simulations on, n = number of islands to be created.
-    let CreateWorld board (board' : Board) simulation mutation (configuration : Configuration) n =
-        let ancestor : Individual = ((FitnessTest.run board board' configuration) ,board,[])
+    let CreateWorld (board : Board) (board' : Board) simulation mutation (configuration : Configuration) n =
+        let ancestor : Individual = ((FitnessTest.run board board' configuration) , board' , [])
         // Unpack the configuration
         let maxIterations , fitTest , algorithm , saConfig , mplConfig = configuration
                   

@@ -54,7 +54,7 @@ module public SimulatedAnnealing =
         // Perform Simulated Annealing on each individual on the Island.
         // Since the Simulated Annealing only runs on a single individual, we need to handle the populations general fitness differently
         // Pass the two sequences together. Return af sequence of touples, remake this as two new Lists.
-        let (individuals , fitnesses) = population
+        //let (individuals , fitnesses) = population
         let (_ , _ , _ , saConfig , _) = configuration
         let (temperature,_,_) = saConfig
         let population' = List.ofSeq (

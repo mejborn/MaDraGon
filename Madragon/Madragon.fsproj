@@ -1,10 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>12.0.0</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{AD7D82EF-344B-414B-86AB-F31A17C4B2D9}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>Madragon</RootNamespace>
@@ -20,7 +18,8 @@
     <OutputPath>bin\Debug</OutputPath>
     <DefineConstants>DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
-    <PlatformTarget />
+    <PlatformTarget>
+    </PlatformTarget>
     <Externalconsole>true</Externalconsole>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -29,7 +28,8 @@
     <Optimize>true</Optimize>
     <OutputPath>bin\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
-    <PlatformTarget />
+    <PlatformTarget>
+    </PlatformTarget>
     <Externalconsole>true</Externalconsole>
     <Tailcalls>true</Tailcalls>
   </PropertyGroup>
@@ -56,12 +56,8 @@
   <ItemGroup>
     <ProjectReference Include="..\Model\Model.fsproj">
       <Name>Model</Name>
-      <Project>{d43e6354-6e7f-4c99-adaa-9451c1445a6a}</Project>
-      <Private>True</Private>
+      <Project>{D43E6354-6E7F-4C99-ADAA-9451C1445A6A}</Project>
     </ProjectReference>
-    <Reference Include="FSharp.Collections.ParallelSeq">
-      <HintPath>..\packages\FSharp.Collections.ParallelSeq.1.0.2\lib\net40\FSharp.Collections.ParallelSeq.dll</HintPath>
-    </Reference>
     <Reference Include="FSharp.Core">
       <HintPath>..\packages\FSharp.Core.3.1.2.1\lib\net40\FSharp.Core.dll</HintPath>
       <Private>True</Private>
@@ -75,10 +71,12 @@
     <Reference Include="mscorlib" />
     <ProjectReference Include="..\Algorithms\Algorithms.fsproj">
       <Name>Algorithms</Name>
-      <Project>{4d1d9310-ceb4-4f64-a791-549932814063}</Project>
-      <Private>True</Private>
+      <Project>{4D1D9310-CEB4-4F64-A791-549932814063}</Project>
     </ProjectReference>
     <Reference Include="System" />
     <Reference Include="System.Numerics" />
+    <Reference Include="FSharp.Collections.ParallelSeq">
+      <HintPath>..\packages\FSharp.Collections.ParallelSeq.1.0.2\lib\net40\FSharp.Collections.ParallelSeq.dll</HintPath>
+    </Reference>
   </ItemGroup>
 </Project>
