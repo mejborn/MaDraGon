@@ -32,8 +32,8 @@ module public Types =
     // ###############
     // # World setup #
     // ###############
-    type RowCol = List<double>
-    type Board = List<RowCol>
+    type Board = Matrix<double>
+    type RowCol = Vector<double>
 
     type SAConfig = Temperature * Cooling * Lambda
     type MPLConfig = Mu * Lambda'

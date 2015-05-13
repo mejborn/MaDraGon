@@ -13,7 +13,7 @@ module public LocalSearch =
     let rec loop (individual : Individual) fitnesses goal configuration =
         //Deconstruct the individual
         let (fitness,board,path) = individual
-        let N = board.Length
+        let N = board.RowCount
 
         //Optimisation needed!
         let mutable tmp  = board

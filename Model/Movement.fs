@@ -12,50 +12,31 @@ module public MoveMent =
 
     let CycleLeft (vector : RowCol) =
         //Insert all except first into sequence, then insert first at the end
-        List.append vector.Tail [vector.Head] : RowCol
+        vector 
+        |>  (fun xs ->  Seq.append (Seq.skip 1 xs) [Seq.head xs]) 
+        |> Vector.Build.DenseOfEnumerable
 
     let CycleRight (vector : RowCol) =
         //Insert last into sequence, then insert everythin except last
-        List.append [vector.[vector.Length-1]] (List.ofSeq (Seq.take (vector.Length-2) vector)) : RowCol
+        vector 
+        |>  (fun xs ->  Seq.append [vector.[vector.Count-1]] (vector.SubVector(0,vector.Count-1) ) )
+        |> Vector.Build.DenseOfEnumerable
    
     let MakeMove (board : Board) (m : move) =
-        let selectCol col =
-            List.ofSeq (
-                seq {0..board.Length-1}
-                |> Seq.map (fun i ->
-                    board.[i].[col]))
-
-        let mutateCol col (col' : RowCol) =
-            List.ofSeq (
-                board
-                |> Seq.mapi (fun i row ->
-                    List.ofSeq(
-                        row
-                        |> Seq.mapi (fun i' value ->
-                            match i with
-                            |col -> col'.[i]
-                            |_ -> value))))
-
-        let mutateRow (row : int) (row' : RowCol) =
-            List.ofSeq (
-                board
-                |> Seq.mapi (fun i row ->
-                    match i with
-                    |row -> row'
-                    |_ -> board.[i]))
-
-        let board' =
+        let mutable board' = board.Clone()
+        let vector =
             match m with
-            //If a row, we can select a whole list.
-            | Move(Left,row) -> 
-                board.[row] |> CycleLeft |> mutateRow row
-            | Move(Right,row) -> 
-                board.[row] |> CycleRight |> mutateRow row
-            //If a collumn, then we need to select the column numbered element from each list
-            | Move(Up,col) -> 
-                selectCol col |> CycleLeft |> mutateCol col
-            | Move(Down,col) -> 
-                selectCol col |> CycleRight |> mutateCol col
+            | Move(Left,row) -> board.Row(row) |> CycleLeft
+            | Move(Right,row) -> board.Row(row) |> CycleRight
+            | Move(Up,col) -> board.Column(col) |> CycleLeft
+            | Move(Down,col) -> board.Column(col) |> CycleRight
+    
+        match m with
+        | Move(Left,row) -> board'.SetRow(row,vector)
+        | Move(Right,row) -> board'.SetRow(row,vector)
+        | Move(Up,col) -> board'.SetColumn(col,vector)
+        | Move(Down,col) -> board'.SetColumn(col,vector)
+
         board'
 
     let ScrambleMap (board : Board) N shuffles =
@@ -74,4 +55,4 @@ module public MoveMent =
                 (directions,rowcols)
                 ||> Seq.map2 (fun direction rowcol -> Move(direction,rowcol)))
         let board' : Board = (Seq.fold (fun board' move -> (MakeMove board' move)) board moves)
-        board' , []
+        board' , moves

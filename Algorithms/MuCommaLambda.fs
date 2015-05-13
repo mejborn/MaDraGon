@@ -34,7 +34,7 @@ module public MuCommaLambda =
                               let parent = parents.[rnd.Next(0,parents.Length-1)]
                               // The new parent will carry new fitness, new board and new path
                               let (fitness,board,path) = parent
-                              let (board',tmp) = ScrambleMap board board.Length k
+                              let (board',tmp) = ScrambleMap board board.RowCount k
                               let path' = List.append path tmp
                               let fitness' = FitnessTest.run board' goal configuration
                               let parent' = (fitness',board',path')

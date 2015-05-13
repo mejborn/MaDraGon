@@ -98,14 +98,8 @@ module public FitnessTest =
 
     let run (original : Board) (solution : Board) (configuration : Configuration) =
         let (_,fitTest,_,_,_) = configuration
-        let originalArray = 
-            Array.ofSeq (
-                original
-                |> Seq.map (fun list -> Array.ofList list))
-        let solutionArray = 
-            Array.ofSeq (
-                solution
-                |> Seq.map (fun list -> Array.ofList list))
+        let originalArray = original.ToColumnArrays()
+        let solutionArray = solution.ToColumnArrays()
         match fitTest with
         |Hamming -> Hamming originalArray solutionArray
         |Manhattan -> Manhattan originalArray solutionArray

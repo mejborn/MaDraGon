@@ -21,7 +21,7 @@ module public SimulatedAnnealing =
     let rec loop (individual : Individual) fitnesses goal (configuration : Configuration) iterations temperature =
         //The posibility that a solution has been found, and the algorithm is called again may be there.
         let (fitness,board,path) = individual
-        let N = board.Length
+        let N = board.RowCount
         let (maxIterations , _ , _ , saConfig , _) = configuration
         let (temperature,cooling,lambda) = saConfig
         
