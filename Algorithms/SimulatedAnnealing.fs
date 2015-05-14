@@ -57,13 +57,14 @@ module public SimulatedAnnealing =
         //let (individuals , fitnesses) = population
         let (_ , _ , _ , saConfig , _) = configuration
         let (temperature,_,_) = saConfig
+        let (individuals,fitness) = population
         let population' = List.ofSeq (
-                            population
-                            ||> Seq.map2 (fun individual fitness -> loop individual [fitness] goal configuration 0 temperature))
+                            individuals
+                            |> Seq.map (fun individual -> loop individual fitness goal configuration 0 temperature))
         // The function returns a sequence of individuals and a sequence of lists of fitnesses
         // Since a Population is defined as a sequence of individuals, and a sequence containing the best individuals fitness
         // We will need to convert them back
-        let (_,fitness') = population'.Head
+        let (_,fitness') = population'.[0]
         let (individuals') = List.ofSeq (population' |> Seq.map (fun (individual , _) -> individual))
         // Return the new Island.
         let island' : Island = (individuals',fitness') , configuration

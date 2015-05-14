@@ -21,6 +21,7 @@ module public Types =
     |Manhattan
     |Density
     |Custom
+    |Hamming2
 
     type Temperature = double
     type Cooling = double

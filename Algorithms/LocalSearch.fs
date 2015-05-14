@@ -50,8 +50,8 @@ module public LocalSearch =
         // Pass the two sequences together. Return af sequence of touples, remake this as two new Lists.
         let (individuals , fitnesses) = population
         let population' = List.ofSeq (
-                            population
-                            ||> Seq.map2 (fun individual fitness -> loop individual [fitness] goal configuration))
+                            individuals
+                            |> Seq.map (fun individual -> loop individual fitnesses goal configuration))
         // The function returns a sequence of individuals and a sequence of lists of fitnesses
         // Since a Population is defined as a sequence of individuals, and a sequence containing the best individuals fitness
         // We will need to convert them back

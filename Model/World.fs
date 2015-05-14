@@ -19,10 +19,10 @@ module public World =
             //Single simulation needed. Create a world with only 1 island
             |Simulation.Single -> [population,configuration]
             //Multiple simulation with same mutation type. Create Several islands, with the original configuration
-            |Simulation.Multiple -> [for i in 0..n -> population,configuration]
+            |Simulation.Multiple -> [for i in 1..n -> population,configuration]
             //Multiple simulations with different mutation types. Create several islands, with different mutation types
             //Perhaps implement different fitness functions for each of the Mutation types
-            |Simulation.All -> [for i in 0..n -> 
+            |Simulation.All -> [for i in 1..n -> 
                                                 population,
                                                 let configuration' = 
                                                     (maxIterations , 
@@ -30,7 +30,7 @@ module public World =
                                                         fitTest),
                                                         (let algorithm' =
                                                             match (i%5) with
-                                                            |0 -> Algorithm.LocalSearch
+                                                            |0 -> Algorithm.MuPlusLambda
                                                             |1 -> Algorithm.MuPlusLambda
                                                             |2 -> Algorithm.MuCommaLambda
                                                             |3 -> Algorithm.SimulatedAnnealing

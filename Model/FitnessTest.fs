@@ -4,6 +4,12 @@ open Types
 open FSharp.Collections.ParallelSeq
 
 module public FitnessTest =
+    let Hamming2 (original : double[][]) solution =
+        let original' = Seq.ofArray original
+        let solution' = Seq.ofArray solution
+        PSeq.zip original' solution'
+        |> PSeq.sumBy (fun (x, y) -> if (x=y) then 0.0 else 1.0)
+        
     let Hamming (original : double[][]) solution =
         Distance.Hamming(Array.concat original , Array.concat solution)/2.0
     
@@ -105,3 +111,4 @@ module public FitnessTest =
         |Manhattan -> Manhattan originalArray solutionArray
         |Density -> Density originalArray solutionArray
         |Custom -> Custom originalArray solutionArray
+        |Hamming2 -> Hamming2 originalArray solutionArray

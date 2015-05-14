@@ -4,6 +4,7 @@ open Model.MoveMent
 open Algorithms
 open FSharp.Collections.ParallelSeq
 open MathNet.Numerics.LinearAlgebra
+open MathNet.Numerics
 
 let DoMutation (world : World) goal =
     List.ofSeq(
@@ -14,7 +15,7 @@ let DoMutation (world : World) goal =
             let (_ , _ , algorithm , _ , _) = configuration
             match algorithm with
             // The algorithms expect an Island and a goal, and will return an Island
-            |Algorithm.LocalSearch -> LocalSearch.run island goal
+            |Algorithm.LocalSearch -> island//LocalSearch.run island goal
             |Algorithm.MuPlusLambda -> MuPlusLambda.run island goal
             |Algorithm.MuCommaLambda -> MuCommaLambda.run island goal
             |Algorithm.SimulatedAnnealing -> SimulatedAnnealing.run island goal
@@ -24,7 +25,7 @@ let DoMutation (world : World) goal =
 [<EntryPoint>]
 let main argv = 
     // General Setup
-    let numRunsForMean = 1
+    let numRunsForMean = 10
     let N = 10 //Board size
     let k = 50 //Number of shuffles
     let board : Board = 
@@ -41,18 +42,18 @@ let main argv =
             [0.0;0.0;1.0;1.0;1.0;1.0;1.0;1.0;0.0;0.0]])
 
     let board',moves = ScrambleMap board N k
-    let maxIterations = 1000 // Maximum iterations an algorithm can work on an Island
-    printfn "%A , %A" board board'
+    let maxIterations = 10000 // Maximum iterations an algorithm can work on an Island
+    printfn "Starting..."
     // Simulation configuration
-    let simulation = Simulation.Single
+    let simulation = Simulation.All
     let algorithm = Algorithm.SimulatedAnnealing
-    let fitTest = FitTest.Hamming
+    let fitTest = FitTest.Hamming2
 
     // Simulation specific configuration
     // Simulated Annealing
     let temperature = 100.0
     let cooling = 0.01
-    let lambda = 1.0
+    let lambda = Constants.E
     let saConfig = temperature , cooling , lambda
     // Mu + Lambdas
     let mu = 5
@@ -66,13 +67,21 @@ let main argv =
                                 |> Seq.map (fun _ -> DoMutation world board))
     // Go trough worlds, and get means from the fitnesses
     for i in 0..worlds.Length-1 do
-        let island = worlds.[i]
-        for j in 0..island.Length-1 do
-            let (population,_) = island.[j]
+        printfn "Running world no. %A" i
+        for island in worlds.[i] do
+            let (population,configuration) = island
+            let (_,fitTest,algorithm,_,_) = configuration
             let (_,fitnesses) = population
             //@TODO: Change output to depend on the island type instead of sorting by worlds
-            System.IO.Directory.CreateDirectory("output/world" + i.ToString() + "/island" + j.ToString())
-            let file = System.IO.File.AppendText("output/world" + i.ToString() + "/island" + j.ToString() + "/output.txt")
+            let algorithmText = match algorithm with
+                |SimulatedAnnealing -> "SimulatedAnnealing"
+                |MuPlusLambda -> "MuPlusLambda"
+                |MuCommaLambda -> "MuCommaLamda"
+                |LocalSearch -> "LocalSearch"
+                |VariableNeighbourhoodSearch -> "VariableNeighbourhoodSearch"
+
+            System.IO.Directory.CreateDirectory("output/" + algorithmText)
+            let file = System.IO.File.AppendText("output/" + algorithmText + "/runno" + i.ToString() + ".txt")
             for i in 0..fitnesses.Length-1 do
                 file.WriteLine(i.ToString() + " " + fitnesses.[i].ToString())
             file.Flush()
