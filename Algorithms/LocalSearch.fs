@@ -12,14 +12,18 @@ open Model.Types
 module public LocalSearch =
     let rec loop (individual : Individual) fitnesses goal configuration =
         //Deconstruct the individual
-        let (fitness,board,path) = individual
+        let mutable (fitness,board,path) = individual
         let N = board.RowCount
+        printfn "%A" fitness
 
         //Optimisation needed!
-        let mutable tmp  = board
+        let mutable tmp = board
         let mutable board' = board
         let mutable move = Move(Left,0)
+<<<<<<< HEAD
         let mutable fitness = FitnessTest.run board goal configuration
+=======
+>>>>>>> origin/master
         for i in 0..N-1 do
             for j in 0..3 do
                 let move' =
@@ -27,17 +31,23 @@ module public LocalSearch =
                     |0 -> Move(Left,i)
                     |1 -> Move(Right,i)
                     |2 -> Move(Up,i)
-                    |_ -> Move(Down,i)
+                    |3 -> Move(Down,i)
                 tmp <- MakeMove board move
                 let fitness' = FitnessTest.run tmp goal configuration
                 if(fitness' < fitness) then
+                    fitness <- fitness'
                     board' <- tmp
                     move <- move'
                     fitness <- fitness'
                     
         
         //If taking a step reduced the fitness, try to take another.
+<<<<<<< HEAD
         if board' <> board then
+=======
+        let (fitness' , _ , _) = individual
+        if fitness <> fitness' then
+>>>>>>> origin/master
             let individual' = fitness,board',List.append path [move]
             let fitnesses' = List.append fitnesses [fitness]
             loop individual' fitnesses' goal configuration
