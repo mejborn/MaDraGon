@@ -1,6 +1,7 @@
 ﻿namespace Model
 open Model.MoveMent
 open MathNet.Numerics.LinearAlgebra
+open FSharp.Collections.ParallelSeq
 open Types
 
 module public World =
@@ -22,7 +23,8 @@ module public World =
             |Simulation.Multiple -> [for i in 1..n -> population,configuration]
             //Multiple simulations with different mutation types. Create several islands, with different mutation types
             //Perhaps implement different fitness functions for each of the Mutation types
-            |Simulation.All -> [for i in 1..n -> 
+            |Simulation.All -> List.ofSeq( 
+                                seq {0..n} |> PSeq.map (fun i ->
                                                 population,
                                                 let configuration' = 
                                                     (maxIterations , 
@@ -30,11 +32,21 @@ module public World =
                                                         fitTest),
                                                         (let algorithm' =
                                                             match (i%5) with
-                                                            |0 -> Algorithm.MuPlusLambda
-                                                            |1 -> Algorithm.MuPlusLambda
-                                                            |2 -> Algorithm.MuCommaLambda
-                                                            |3 -> Algorithm.SimulatedAnnealing
-                                                            |_ -> Algorithm.VariableNeighbourhoodSearch
+                                                            |0 ->
+                                                                printfn "Created an Island with LocalSearch" 
+                                                                Algorithm.LocalSearch
+                                                            |1 -> 
+                                                                printfn "Created an Island with MuPlusLamda" 
+                                                                Algorithm.MuPlusLambda
+                                                            |2 -> 
+                                                                printfn "Created an Island with MuCommaLambda" 
+                                                                Algorithm.MuCommaLambda
+                                                            |3 ->
+                                                                printfn "Created an Island with SimulatedAnnealing"  
+                                                                Algorithm.SimulatedAnnealing
+                                                            |_ ->
+                                                                printfn "Running VariableNeighborhoodSearch"  
+                                                                Algorithm.VariableNeighbourhoodSearch
                                                         algorithm') , saConfig , mplConfig)
-                                                configuration']
+                                                configuration'))
         islands

@@ -1,6 +1,7 @@
 ﻿namespace Algorithms
 open MathNet.Numerics
 open MathNet.Numerics.Distributions
+open FSharp.Collections.ParallelSeq
 open Model
 open Model.MoveMent
 open Model.Types
@@ -29,7 +30,7 @@ module public MuCommaLambda =
             List.ofSeq(
                 //Since lambda is defined as a double. It has to be cast as Int in this case
                 seq {0..(int)lambda}
-                |> Seq.map (fun _ -> 
+                |> PSeq.map (fun _ -> 
                               let k = Poisson.Sample(1.0)
                               let parent = parents.[rnd.Next(0,parents.Length-1)]
                               // The new parent will carry new fitness, new board and new path
@@ -49,6 +50,7 @@ module public MuCommaLambda =
         
         let iterations' = iterations + 1    
         if (fitness' = 0.0 || iterations > maxIterations) then
+            printfn "Mu , Lambda Finished"
             population' , configuration
         else
             loop population' goal configuration iterations'

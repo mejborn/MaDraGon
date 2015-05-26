@@ -13,7 +13,7 @@ module public MoveMent =
     let CycleLeft (vector : RowCol) =
         //Insert all except first into sequence, then insert first at the end
         vector 
-        |>  (fun xs ->  Seq.append (Seq.skip 1 xs) [Seq.head xs]) 
+        |> (fun xs ->  Seq.append (Seq.skip 1 xs) [Seq.head xs]) 
         |> Vector.Build.DenseOfEnumerable
 
     let CycleRight (vector : RowCol) =

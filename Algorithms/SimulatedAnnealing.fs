@@ -4,6 +4,7 @@ open MathNet.Numerics.Distributions
 open Model
 open Model.MoveMent
 open Model.Types
+open FSharp.Collections.ParallelSeq
 
 // ##################################################
 // # Performs Simulated Annealing on a given Island #
@@ -18,7 +19,9 @@ module public SimulatedAnnealing =
             Seq.initInfinite (fun _ -> this.Next(minValue, maxValue))
     let rnd = System.Random()
 
-    let rec loop (individual : Individual) fitnesses goal (configuration : Configuration) iterations temperature =
+    let rec loop (individual : Individual) fitnesses goal (configuration : Configuration) iterations temperature stuckCounter =
+        // Check if stuckCounter is too high. If stuck, Start over
+        
         //The posibility that a solution has been found, and the algorithm is called again may be there.
         let (fitness,board,path) = individual
         let N = board.RowCount
@@ -43,11 +46,12 @@ module public SimulatedAnnealing =
             else Constants.E ** ((fitness-fitness')/temperature)
 
         if (fitness' = 0.0 || iterations > maxIterations) then //Stop the algorithm
+            printfn "Simulated Annealing finished"
             individual' , fitnesses'
         else if(rnd.NextDouble() <= AcceptanceProbability) then //Keep the new individual
-            loop individual' fitnesses' goal configuration iterations' temperature'
+            loop individual' fitnesses' goal configuration iterations' temperature' stuckCounter
         else
-            loop individual fitnesses goal configuration iterations' temperature' //Throw out the new individual
+            loop individual fitnesses goal configuration iterations' temperature' (stuckCounter + 1) //Throw out the new individual
 
     let run (island : Island) (goal : Board) =
         let (population : Population , configuration) = island
@@ -60,7 +64,7 @@ module public SimulatedAnnealing =
         let (individuals,fitness) = population
         let population' = List.ofSeq (
                             individuals
-                            |> Seq.map (fun individual -> loop individual fitness goal configuration 0 temperature))
+                            |> PSeq.map (fun individual -> loop individual fitness goal configuration 0 temperature 0))
         // The function returns a sequence of individuals and a sequence of lists of fitnesses
         // Since a Population is defined as a sequence of individuals, and a sequence containing the best individuals fitness
         // We will need to convert them back

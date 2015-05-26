@@ -4,6 +4,7 @@ open MathNet.Numerics.Distributions
 open Model
 open Model.MoveMent
 open Model.Types
+open FSharp.Collections.ParallelSeq
 
 // ##################################################
 // # Performs Mu Plus Lambda on a given Island      #
@@ -27,9 +28,8 @@ module public MuPlusLambda =
         // Generate lambda new children from parents in the population
         let parents' : List<Individual> = 
             List.ofSeq(
-                //Since lambda is defined as a double. It has to be cast as Int in this case
-                seq {0..(int)lambda}
-                |> Seq.map (fun _ -> 
+                seq {0..lambda}
+                |> PSeq.map (fun _ -> 
                               let k = Poisson.Sample(1.0)
                               let parent = parents.[rnd.Next(0,parents.Length-1)]
                               // The new parent will carry new fitness, new board and new path
@@ -50,6 +50,7 @@ module public MuPlusLambda =
         
         let iterations' = iterations + 1    
         if (fitness' = 0.0 || iterations > maxIterations) then
+            printfn "Mu Plus Lambda Finished"
             population' , configuration
         else
             loop population' goal configuration iterations'

@@ -19,7 +19,7 @@ module public LocalSearch =
         let mutable tmp  = board
         let mutable board' = board
         let mutable move = Move(Left,0)
-        let mutable fitness' = FitnessTest.run board goal configuration
+        let mutable fitness = FitnessTest.run board goal configuration
         for i in 0..N-1 do
             for j in 0..3 do
                 let move' =
@@ -29,17 +29,20 @@ module public LocalSearch =
                     |2 -> Move(Up,i)
                     |_ -> Move(Down,i)
                 tmp <- MakeMove board move
-                let fitness' = FitnessTest.run board goal configuration
+                let fitness' = FitnessTest.run tmp goal configuration
                 if(fitness' < fitness) then
                     board' <- tmp
                     move <- move'
+                    fitness <- fitness'
+                    
         
         //If taking a step reduced the fitness, try to take another.
         if board' <> board then
-            let individual' = fitness',board',List.append path [move]
+            let individual' = fitness,board',List.append path [move]
             let fitnesses' = List.append fitnesses [fitness]
             loop individual' fitnesses' goal configuration
         else
+            printfn "LocalSearch Finished"
             (individual,fitnesses)
 
     let run (island : Island) (goal : Board) =
@@ -51,7 +54,7 @@ module public LocalSearch =
         let (individuals , fitnesses) = population
         let population' = List.ofSeq (
                             individuals
-                            |> Seq.map (fun individual -> loop individual fitnesses goal configuration))
+                            |> Seq.map (fun individual-> loop individual fitnesses goal configuration))
         // The function returns a sequence of individuals and a sequence of lists of fitnesses
         // Since a Population is defined as a sequence of individuals, and a sequence containing the best individuals fitness
         // We will need to convert them back
