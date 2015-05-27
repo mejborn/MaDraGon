@@ -40,6 +40,7 @@ let main argv =
     let k = 2 //Number of shuffles
     let board : Board = DenseMatrix.init N N (fun i j ->  (double) ((i+j) % 2))
 
+
     let board',moves = ScrambleMap board N k
     let maxIterations = 100000 // Maximum iterations an algorithm can work on an Island
     printfn "Starting..."
@@ -84,7 +85,7 @@ let main argv =
                     |LocalSearch -> "LocalSearch"
                     |VariableNeighbourhoodSearch -> "VariableNeighbourhoodSearch"
 
-            System.IO.Directory.CreateDirectory("output/" + algorithmText)
+            ignore (System.IO.Directory.CreateDirectory("output/" + algorithmText))
             let file = System.IO.File.AppendText("output/" + algorithmText + "/runno" + i.ToString() + ".txt")
             for i in 0..fitnesses.Length-1 do
                 file.WriteLine(i.ToString() + " " + fitnesses.[i].ToString())
