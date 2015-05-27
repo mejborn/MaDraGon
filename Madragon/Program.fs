@@ -37,14 +37,14 @@ let main argv =
     // General Setup
     let numRunsForMean = 1
     let N = 5 //Board size
-    let k = 10 //Number of shuffles
+    let k = 2 //Number of shuffles
     let board : Board = DenseMatrix.init N N (fun i j ->  (double) ((i+j) % 2))
 
     let board',moves = ScrambleMap board N k
     let maxIterations = 100000 // Maximum iterations an algorithm can work on an Island
     printfn "Starting..."
     // Simulation configuration
-    let simulation = Simulation.All
+    let simulation = Simulation.Single
     let algorithm = Algorithm.LocalSearch
     let fitTest = FitTest.Hamming2
 

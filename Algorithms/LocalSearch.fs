@@ -20,10 +20,6 @@ module public LocalSearch =
         let mutable tmp = board
         let mutable board' = board
         let mutable move = Move(Left,0)
-<<<<<<< HEAD
-        let mutable fitness = FitnessTest.run board goal configuration
-=======
->>>>>>> origin/master
         for i in 0..N-1 do
             for j in 0..3 do
                 let move' =
@@ -42,12 +38,9 @@ module public LocalSearch =
                     
         
         //If taking a step reduced the fitness, try to take another.
-<<<<<<< HEAD
-        if board' <> board then
-=======
         let (fitness' , _ , _) = individual
         if fitness <> fitness' then
->>>>>>> origin/master
+            printfn "Found a different solution"
             let individual' = fitness,board',List.append path [move]
             let fitnesses' = List.append fitnesses [fitness]
             loop individual' fitnesses' goal configuration
