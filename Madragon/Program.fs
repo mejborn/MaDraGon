@@ -15,7 +15,7 @@ let DoMutation (world : World) goal =
             let (_ , _ , algorithm , _ , _) = configuration
             match algorithm with
             // The algorithms expect an Island and a goal, and will return an Island
-            |Algorithm.LocalSearch -> island//LocalSearch.run island goal
+            |Algorithm.LocalSearch -> LocalSearch.run island goal
             |Algorithm.MuPlusLambda -> MuPlusLambda.run island goal
             |Algorithm.MuCommaLambda -> MuCommaLambda.run island goal
             |Algorithm.SimulatedAnnealing -> SimulatedAnnealing.run island goal
@@ -25,9 +25,9 @@ let DoMutation (world : World) goal =
 [<EntryPoint>]
 let main argv = 
     // General Setup
-    let numRunsForMean = 10
+    let numRunsForMean = 1
     let N = 10 //Board size
-    let k = 50 //Number of shuffles
+    let k = 2 //Number of shuffles
     let board : Board = 
         DenseMatrix.ofColumnList (
             [[0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0];
@@ -45,8 +45,8 @@ let main argv =
     let maxIterations = 10000 // Maximum iterations an algorithm can work on an Island
     printfn "Starting..."
     // Simulation configuration
-    let simulation = Simulation.All
-    let algorithm = Algorithm.SimulatedAnnealing
+    let simulation = Simulation.Single
+    let algorithm = Algorithm.LocalSearch
     let fitTest = FitTest.Hamming2
 
     // Simulation specific configuration
@@ -80,7 +80,7 @@ let main argv =
                 |LocalSearch -> "LocalSearch"
                 |VariableNeighbourhoodSearch -> "VariableNeighbourhoodSearch"
 
-            System.IO.Directory.CreateDirectory("output/" + algorithmText)
+            ignore (System.IO.Directory.CreateDirectory("output/" + algorithmText))
             let file = System.IO.File.AppendText("output/" + algorithmText + "/runno" + i.ToString() + ".txt")
             for i in 0..fitnesses.Length-1 do
                 file.WriteLine(i.ToString() + " " + fitnesses.[i].ToString())
