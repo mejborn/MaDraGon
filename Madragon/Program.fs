@@ -6,36 +6,70 @@ open FSharp.Collections.ParallelSeq
 open MathNet.Numerics.LinearAlgebra
 open MathNet.Numerics
 
-let DoMutation (world : World) goal =
-    List.ofSeq(
-        world
-        |> PSeq.map (fun (island : Island) ->
-            // Deconstruct the island and the configuration
-            let population , (configuration : Configuration) = island
-            let (_ , _ , algorithm , _ , _) = configuration
-            match algorithm with
-            // The algorithms expect an Island and a goal, and will return an Island
-            |Algorithm.LocalSearch -> 
-                printfn "Running Local search" 
-                LocalSearch.run island goal
-            |Algorithm.MuPlusLambda -> 
-                printfn "Running MuPlusLamda" 
-                MuPlusLambda.run island goal
-            |Algorithm.MuCommaLambda -> 
-                printfn "Running MuCommaLambda" 
-                MuCommaLambda.run island goal
-            |Algorithm.SimulatedAnnealing -> 
-                printfn "Running SimulatedAnnealing"
-                SimulatedAnnealing.run island goal
-            |Algorithm.VariableNeighbourhoodSearch -> 
-                printfn "Running VariableNeighborhoodSearch"
-                island//EvolutionaryAlgorithms.RunSimulation.localSearch island
-        ))
+let rec DoMutation (world : World) goal numMerges maxMerges =
+    let world' = 
+        List.ofSeq(
+            world
+            // Mutate the islands, they will all run for maxIterations
+            // Islands can be mutated individually, so they can run in parallel
+            |> PSeq.map (fun (island : Island) ->
+                // Deconstruct the island and the configuration
+                let population , (configuration : Configuration) = island
+                let (_ , _ , algorithm , _ , _) = configuration
+                match algorithm with
+                // The algorithms expect an Island and a goal, and will return an Island
+                |Algorithm.LocalSearch -> 
+                    printfn "Running Local search" 
+                    LocalSearch.run island goal
+                |Algorithm.MuPlusLambda -> 
+                    printfn "Running MuPlusLamda" 
+                    MuPlusLambda.run island goal
+                |Algorithm.MuCommaLambda -> 
+                    printfn "Running MuCommaLambda" 
+                    MuCommaLambda.run island goal
+                |Algorithm.SimulatedAnnealing -> 
+                    printfn "Running SimulatedAnnealing"
+                    SimulatedAnnealing.run island goal
+                |Algorithm.VariableNeighbourhoodSearch -> 
+                    printfn "Running VariableNeighborhoodSearch"
+                    VariableNeighborhoodSearch.run island goal
+            ))
+    if (numMerges >= maxMerges) then
+        world'
+    else
+        // Migrate the islands, and DoMutation again
+        let bestIndividuals =
+            List.ofSeq(
+                world'
+                |> PSeq.map (fun island ->
+                    let population , configuration = island
+                    let (individuals , _) = population
+                    let individuals' = 
+                        individuals
+                        |> List.sortBy (fun (fitness , board , path) -> fitness)
+                    individuals.[0]
+                    ))
+        // We got all the best individuals, now clone the best one into all the islands
+        let world =
+            List.ofSeq(
+                world'
+                |> PSeq.map (fun island ->
+                    let population , configuration = island
+                    let individuals , fitnesses = population
+                    let individuals' = List.append [bestIndividuals.[0]] individuals
+                    //Perhaps the best individuals' fitness should be included in the fitness list?
+                    let population' = individuals' , fitnesses
+                    let island' = population' , configuration
+                    island'))
+        DoMutation world goal (numMerges+1) maxMerges
+
+
 
 [<EntryPoint>]
 let main argv = 
     // General Setup
     let numRunsForMean = 1
+    let maxMerges = 2
     let N = 5 //Board size
     let k = 2 //Number of shuffles
     let board : Board = DenseMatrix.init N N (fun i j ->  (double) ((i+j) % 2))
@@ -64,11 +98,14 @@ let main argv =
     // Create world from configuration
     let world : World = World.CreateWorld board board' simulation algorithm configuration 4
 
+    // Todo: Implement merging of islands
     // Mutate the world(s)
-    let worlds : List<World> = List.ofSeq (seq {0..numRunsForMean-1}
+    let worlds : List<World> = 
+        List.ofSeq (seq {0..numRunsForMean-1}
                                 |> Seq.map (fun i -> 
                                     printfn "Creating world no. %A" i
-                                    DoMutation world board))
+                                    DoMutation world board 0 maxMerges))
+  
     // Go trough worlds, and get means from the fitnesses
     for i in 0..worlds.Length-1 do
         printfn "Printing data from World no. %A" i
