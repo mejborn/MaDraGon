@@ -49,9 +49,11 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="RunSimulation.fs" />
-    <Compile Include="Program.fs" />
+    <Compile Include="MainForm.fs" />
     <None Include="app.config" />
+    <Compile Include="DoMutation.fs" />
     <None Include="packages.config" />
+    <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Model\Model.fsproj">
@@ -74,9 +76,11 @@
       <Project>{4D1D9310-CEB4-4F64-A791-549932814063}</Project>
     </ProjectReference>
     <Reference Include="System" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Numerics" />
     <Reference Include="FSharp.Collections.ParallelSeq">
       <HintPath>..\packages\FSharp.Collections.ParallelSeq.1.0.2\lib\net40\FSharp.Collections.ParallelSeq.dll</HintPath>
     </Reference>
+    <Reference Include="System.Windows.Forms" />
   </ItemGroup>
 </Project>

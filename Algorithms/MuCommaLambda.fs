@@ -48,12 +48,11 @@ module public MuCommaLambda =
         let fitnesses' = List.append fitnesses [fitness']
         let population' : Population = (parents',fitnesses')
         
-        let iterations' = iterations + 1    
         if (fitness' = 0.0 || iterations > maxIterations) then
             printfn "Mu , Lambda Finished"
             population' , configuration
         else
-            loop population' goal configuration iterations'
+            loop population' goal configuration (iterations + 1)
 
     let run (island : Island) (goal : Board) =
         // Deconstruct the Island

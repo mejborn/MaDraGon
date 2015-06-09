@@ -15,7 +15,6 @@ open Model.Types
             let mutable (fitness,board,path) = individual
             let (maxIterations,_,_,_,_) = configuration
             let N = board.RowCount
-            printfn "%A" fitness
 
             //Check all neighbours, and select the best
             let mutable tmp = board
