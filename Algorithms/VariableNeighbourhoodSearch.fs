@@ -10,7 +10,7 @@ open Model.Types
 //// ##################################################
 //
     module public VariableNeighborhoodSearch =
-        let rec loop (individual : Individual) fitnesses goal configuration i operator =
+        let rec loop (individual : Individual) fitnesses goal configuration i operator numIterationsWithoutMove =
             //Deconstruct the individual
             let mutable (fitness,board,path) = individual
             let (maxIterations,_,_,_,_) = configuration
@@ -45,16 +45,19 @@ open Model.Types
             let (fitness' , _ , _) = individual
             //If solution has been found or maxiteration has been reached, return
             if (fitness = 0.0 || i > maxIterations) then
-                printfn "LocalSearch Finished"
-                (individual,fitnesses)
+                printfn "VariableNeighbourhoodSearch Finished"
+                (individual,List.append fitnesses [fitness])
             //If a better sollution has been found, continue with that.
             else if fitness <> fitness' then
                 let individual' = fitness,board',List.append path [move]
                 let fitnesses' = List.append fitnesses [fitness]
-                loop individual' fitnesses' goal configuration (i+1) operator
+                loop individual' fitnesses' goal configuration (i+1) operator 0
+            else if numIterationsWithoutMove < 500 then
+                loop individual fitnesses goal configuration (i+1) (not operator) (numIterationsWithoutMove+1)
             else
             //Else try going the other way
-                loop individual fitnesses goal configuration (i+1) (not operator)
+                //printfn "Turning around"
+                loop individual fitnesses goal configuration (i+1) (not operator) 0
 
         let run (island : Island) (goal : Board) =
             // Deconstruct the island
@@ -65,7 +68,7 @@ open Model.Types
             let (individuals , fitnesses) = population
             let population' = List.ofSeq (
                                 individuals
-                                |> Seq.map (fun individual-> loop individual fitnesses goal configuration 0 true))
+                                |> Seq.map (fun individual-> loop individual fitnesses goal configuration 0 true 0))
             // The function returns a sequence of individuals and a sequence of lists of fitnesses
             // Since a Population is defined as a sequence of individuals, and a sequence containing the best individuals fitness
             // We will need to convert them back

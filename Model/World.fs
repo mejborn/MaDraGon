@@ -32,9 +32,9 @@ module public World =
                                                         fitTest),
                                                         (let algorithm' =
                                                             match (i%5) with
-                                                            |0 ->
-                                                                printfn "Created an Island with LocalSearch" 
-                                                                Algorithm.LocalSearch
+//                                                            |0 ->
+//                                                                printfn "Created an Island with LocalSearch" 
+//                                                                Algorithm.LocalSearch
                                                             |1 -> 
                                                                 printfn "Created an Island with MuPlusLamda" 
                                                                 Algorithm.MuPlusLambda

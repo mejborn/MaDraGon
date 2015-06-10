@@ -20,29 +20,32 @@
                     match algorithm with
                     // The algorithms expect an Island and a goal, and will return an Island
                     |Algorithm.LocalSearch -> 
-                        printfn "Running Local search" 
+                        //printfn "Running Local search" 
                         LocalSearch.run island goal
                     |Algorithm.MuPlusLambda -> 
-                        printfn "Running MuPlusLamda" 
+                        //printfn "Running MuPlusLamda" 
                         MuPlusLambda.run island goal
                     |Algorithm.MuCommaLambda -> 
-                        printfn "Running MuCommaLambda" 
+                        //printfn "Running MuCommaLambda" 
                         MuCommaLambda.run island goal
                     |Algorithm.SimulatedAnnealing -> 
-                        printfn "Running SimulatedAnnealing"
+                        //printfn "Running SimulatedAnnealing"
                         SimulatedAnnealing.run island goal
                     |Algorithm.VariableNeighbourhoodSearch -> 
-                        printfn "Running VariableNeighborhoodSearch"
+                        //printfn "Running VariableNeighborhoodSearch"
                         VariableNeighborhoodSearch.run island goal
                 ))
+        printfn ""
+        printfn "Finished running algorithms"
         if (numMerges >= maxMerges) then
             world'
         else
+            printfn "Mergin run no: %A"  numMerges
             // Migrate the islands, and DoMutation again
             let bestIndividuals =
                 List.ofSeq(
                     world'
-                    |> PSeq.map (fun island ->
+                    |> Seq.map (fun island ->
                         let population , configuration = island
                         let (individuals , _) = population
                         let individuals' = 
@@ -51,15 +54,15 @@
                         individuals.[0]
                         ))
             // We got all the best individuals, now clone the best one into all the islands
-            let world =
+            let world'' =
                 List.ofSeq(
                     world'
-                    |> PSeq.map (fun island ->
+                    |> Seq.map (fun island ->
                         let population , configuration = island
                         let individuals , fitnesses = population
-                        let individuals' = List.append [bestIndividuals.[0]] individuals
-                        //Perhaps the best individuals' fitness should be included in the fitness list?
+                        let individuals' = List.append [bestIndividuals.[0]] individuals // Put best individual in front of the sequence
                         let population' = individuals' , fitnesses
                         let island' = population' , configuration
-                        island'))
-            run world goal (numMerges+1) maxMerges
+                        island')
+                        |> Seq.take (world.Length)) //We dont want the worlds to grow
+            run world'' goal (numMerges+1) maxMerges

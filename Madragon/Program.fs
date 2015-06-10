@@ -9,20 +9,20 @@ open MathNet.Numerics
 [<EntryPoint>]
 let main argv = 
     // General Setup
-    let numRunsForMean = 1
-    let maxMerges = 4
+    let numRunsForMean = 50
+    let maxMerges = 5
     let N = 5 //Board size
     let k = 25 //Number of shuffles
-    let numIslands = 1
+    let numIslands = 2
     let board : Board = DenseMatrix.init N N (fun i j ->  (double) ((i+j) % 2))
 
     let board',moves = ScrambleMap board N k
-    let maxIterations = 100000 // Maximum iterations an algorithm can work on an Island
+    let maxIterations = 10000 // Maximum iterations an algorithm can work on an Island
     printfn "Starting..."
     // Simulation configuration
     let simulation = Simulation.Single
     let algorithm = Algorithm.VariableNeighbourhoodSearch
-    let fitTest = FitTest.Hamming2
+    let fitTest = FitTest.Hamming
 
     // Simulation specific configuration
     // Simulated Annealing
@@ -44,6 +44,7 @@ let main argv =
                                     DoMutation.run world board 0 maxMerges))
   
     // Go trough worlds, and get means from the fitnesses
+    printfn "Outputting data before reduction"
     for i in 0..worlds.Length-1 do
         printfn "Printing data from World no. %A" i
         for island in worlds.[i] do
@@ -58,17 +59,15 @@ let main argv =
                     |LocalSearch -> "LocalSearch"
                     |VariableNeighbourhoodSearch -> "VariableNeighbourhoodSearch"
 
-            ignore (System.IO.Directory.CreateDirectory("output/" + algorithmText))
-            let file = System.IO.File.AppendText("output/" + algorithmText + "/runno" + i.ToString() + ".txt")
+            ignore (System.IO.Directory.CreateDirectory("output/before_reduction/" + algorithmText))
+            let file = System.IO.File.AppendText("output/before_reduction/" + algorithmText + "/runno" + i.ToString() + ".txt")
             for i in 0..fitnesses.Length-1 do
                 file.WriteLine(i.ToString() + " " + fitnesses.[i].ToString())
             file.Flush()
             file.Close()
-
-    // ###############################################
-    // #           REDUCION OF PATH LENGTH           #
-    // ###############################################
-
+    // Try to reduce the path length
+    // Deconstructing the first world, to get the run configuration
+    let island = worlds.[0].[0]
     // Get the the best solution available
     let bestSolution =
         let mutable bestFitness = 99999.9
@@ -86,18 +85,18 @@ let main argv =
                     if (path'.Length < path.Length) then
                         solution <- individuals.[0]
         solution
-    // Find two random points in the solution paths and use them as new starting points
     let _ , _ , path = bestSolution
-    let val1 , val2 = System.Random().Next(0,path.Length-1) , System.Random().Next(0,path.Length-1)
-
-    let solboard , solboard' =
-        if (val1 < val2) then
-            Seq.fold (fun board move -> MakeMove board move) board (Seq.take val1 path)
-            ,
-            Seq.fold (fun board move -> MakeMove board move) board (Seq.take val2 path)
-        else
-            Seq.fold (fun board move -> MakeMove board move) board (Seq.take val2 path)
-            ,
-            Seq.fold (fun board move -> MakeMove board move) board (Seq.take val1 path)
-    let world' : World = World.CreateWorld solboard solboard' simulation algorithm configuration numIslands
+    printfn "Trying to reduce the length of the path"
+    ignore (System.IO.Directory.CreateDirectory("output/path_reduction"))
+    let file = System.IO.File.AppendText("output/path_reduction/" + "result.txt")
+    seq {0..maxIterations}
+    |> Seq.fold (fun path' i ->
+        printfn "%A" i
+        let path'' = PathReduction.run board path simulation algorithm configuration numIslands maxMerges
+        file.WriteLine(path''.Length)
+        path'') path
+    |> file.WriteLine
+        
+    file.Flush()
+    file.Close()
     0
