@@ -44,7 +44,7 @@ module public Types =
     | MuPlusLambda
     | MuCommaLambda
     | LocalSearch
-    | VariableNeighbourhoodSearch
+    | OptimisticLocalSearch
 
     type Configuration = MaxIterations * FitTest * Algorithm * SAConfig * MPLConfig
 

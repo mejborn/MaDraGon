@@ -14,6 +14,7 @@ open Model.Types
 // ##################################################
 
 module public MuCommaLambda = 
+    let mutable originalIndividuals = Unchecked.defaultof<List<Individual>>
     type System.Random with
         /// Generates an infinite sequence of random numbers within the given range.
         member this.GetValues(minValue, maxValue) =
@@ -37,7 +38,7 @@ module public MuCommaLambda =
                               let (fitness,board,path) = parent
                               let (board',tmp) = ScrambleMap board board.RowCount k
                               let path' = List.append path tmp
-                              let fitness' = FitnessTest.run board' goal configuration
+                              let fitness' = FitnessTest.run goal board' configuration
                               let parent' = (fitness',board',path')
                               parent')
                 // Sort by fitness, and keep the mu best.
@@ -46,10 +47,14 @@ module public MuCommaLambda =
         // Generate a new Population with the best available fitness.
         let (fitness',_,_) = parents'.Head
         let fitnesses' = List.append fitnesses [fitness']
-        let population' : Population = (parents',fitnesses')
+        let population' : Population = 
+            if ((iterations % 1000) = 0) then // Reset if has run for 1000 iterations without solution
+                originalIndividuals , fitnesses'
+            else
+                (parents',fitnesses')
         
         if (fitness' = 0.0 || iterations > maxIterations) then
-            printfn "Mu , Lambda Finished"
+            if (fitness' = 0.0) then printfn "MCL Found a solution"
             population' , configuration
         else
             loop population' goal configuration (iterations + 1)
@@ -57,5 +62,7 @@ module public MuCommaLambda =
     let run (island : Island) (goal : Board) =
         // Deconstruct the Island
         let (population , configuration) = island
+        let individuals , _ = population
+        originalIndividuals <- individuals
         // Since Mu , Lambda is family tree dependant, the whole Population can be sent to the algorithm.
         loop population goal configuration 0

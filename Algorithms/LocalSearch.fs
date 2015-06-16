@@ -29,7 +29,7 @@ module public LocalSearch =
                     |2 -> Move(Up,i)
                     |3 -> Move(Down,i)
                 tmp <- MakeMove board move
-                let fitness' = FitnessTest.run tmp goal configuration
+                let fitness' = FitnessTest.run goal tmp configuration
                 if(fitness' < fitness) then
                     fitness <- fitness'
                     board' <- tmp
@@ -40,12 +40,12 @@ module public LocalSearch =
         //If taking a step reduced the fitness, try to take another.
         let (fitness' , _ , _) = individual
         if fitness <> fitness' then
-            printfn "Found a different solution"
+           // printfn "Found a different solution"
             let individual' = fitness,board',List.append path [move]
             let fitnesses' = List.append fitnesses [fitness]
             loop individual' fitnesses' goal configuration
         else
-            printfn "LocalSearch Finished"
+            //printfn "LocalSearch Finished"
             (individual,fitnesses)
 
     let run (island : Island) (goal : Board) =

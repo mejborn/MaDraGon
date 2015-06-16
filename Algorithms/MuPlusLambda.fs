@@ -14,6 +14,7 @@ open FSharp.Collections.ParallelSeq
 // ##################################################
 
 module public MuPlusLambda = 
+    let mutable originalIndividuals = Unchecked.defaultof<List<Individual>>
     type System.Random with
         /// Generates an infinite sequence of random numbers within the given range.
         member this.GetValues(minValue, maxValue) =
@@ -23,6 +24,11 @@ module public MuPlusLambda =
     let rec loop (population : Population) goal configuration iterations =
         // De-construct the configuration
         let (maxIterations , _ , _ , _ , mplConfig) = configuration
+        // Print progress
+        let iterations' = (double) iterations
+        let percentage = (iterations' / (double) maxIterations) * 100.0
+        //printfn "%A" percentage
+        
         let (mu,lambda) = mplConfig
         let (parents,fitnesses) = population
         // Generate lambda new children from parents in the population
@@ -36,7 +42,7 @@ module public MuPlusLambda =
                               let (fitness,board,path) = parent
                               let (board',tmp) = ScrambleMap board board.RowCount k
                               let path' = List.append path tmp
-                              let fitness' = FitnessTest.run board' goal configuration
+                              let fitness' = FitnessTest.run goal board' configuration
                               let parent' = (fitness',board',path')
                               parent')
                 // Add the new parents to the population buffer, sort by fitness, and keep the mu best.
@@ -45,18 +51,24 @@ module public MuPlusLambda =
                 |> Seq.take mu)
         // Generate a new Population with the best available fitness.
         let (fitness',_,_) = parents'.Head
-        let fitnesses' = List.append fitnesses [fitness']
-        let population' : Population = (parents',fitnesses')
         
-        let iterations' = iterations + 1    
+        let fitnesses' = List.append fitnesses [fitness']
+        let population' : Population = 
+            if ((iterations % 1000) = 0) then // Reset if has run for 1000 iterations without solution
+                originalIndividuals , fitnesses'
+            else
+                (parents',fitnesses')
+        
         if (fitness' = 0.0 || iterations > maxIterations) then
-            printfn "Mu Plus Lambda Finished"
+            if (fitness' = 0.0) then printfn "MPL Found a solution"
             population' , configuration
         else
-            loop population' goal configuration iterations'
+            loop population' goal configuration (iterations + 1)
 
-    let run (island : Island) (goal : Board)=
+    let run (island : Island) (goal : Board) =
         // Deconstruct the island
         let (population , configuration) = island
+        let individuals , _ = population
+        originalIndividuals <- individuals
         // Since Mu plus Lambda is family tree dependant, the whole Population can be sent to the algorithm.
         loop population goal configuration 0

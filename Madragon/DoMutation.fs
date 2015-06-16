@@ -4,8 +4,8 @@
     open Model.MoveMent
     open Algorithms
     open FSharp.Collections.ParallelSeq
-    open MathNet.Numerics.LinearAlgebra
     open MathNet.Numerics
+    open MathNet.Numerics.LinearAlgebra
 
     let rec run (world : World) goal numMerges maxMerges =
         let world' = 
@@ -31,12 +31,13 @@
                     |Algorithm.SimulatedAnnealing -> 
                         //printfn "Running SimulatedAnnealing"
                         SimulatedAnnealing.run island goal
-                    |Algorithm.VariableNeighbourhoodSearch -> 
+                    |Algorithm.OptimisticLocalSearch -> 
                         //printfn "Running VariableNeighborhoodSearch"
-                        VariableNeighborhoodSearch.run island goal
+                        OptimisticLocalSearch.run island goal
                 ))
-        printfn ""
-        printfn "Finished running algorithms"
+        
+        //printfn ""
+        //printfn "Finished running algorithms"
         if (numMerges >= maxMerges) then
             world'
         else
@@ -50,8 +51,10 @@
                         let (individuals , _) = population
                         let individuals' = 
                             individuals
-                            |> List.sortBy (fun (fitness , board , path) -> fitness)
-                        individuals.[0]
+                            |> List.sortBy (fun (fitness , board , path) -> fitness, path.Length)
+                        let (fitness , _ , _) = individuals'.[0]
+                        printfn "Best Individual fitness: %A" fitness
+                        individuals'.[0]
                         ))
             // We got all the best individuals, now clone the best one into all the islands
             let world'' =

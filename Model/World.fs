@@ -31,22 +31,22 @@ module public World =
                                                         (let fitTest = fitTest
                                                         fitTest),
                                                         (let algorithm' =
-                                                            match (i%5) with
+                                                            match (i%4) with
 //                                                            |0 ->
 //                                                                printfn "Created an Island with LocalSearch" 
 //                                                                Algorithm.LocalSearch
-                                                            |1 -> 
+                                                            |0 -> 
                                                                 printfn "Created an Island with MuPlusLamda" 
                                                                 Algorithm.MuPlusLambda
-                                                            |2 -> 
+                                                            |1 -> 
                                                                 printfn "Created an Island with MuCommaLambda" 
                                                                 Algorithm.MuCommaLambda
-                                                            |3 ->
+                                                            |2 ->
                                                                 printfn "Created an Island with SimulatedAnnealing"  
                                                                 Algorithm.SimulatedAnnealing
                                                             |_ ->
-                                                                printfn "Running VariableNeighborhoodSearch"  
-                                                                Algorithm.VariableNeighbourhoodSearch
+                                                                printfn "Created an Island with VariableNeighborhoodSearch"  
+                                                                Algorithm.OptimisticLocalSearch
                                                         algorithm') , saConfig , mplConfig)
                                                 configuration'))
         islands

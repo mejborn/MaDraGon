@@ -2,14 +2,14 @@
 open Model
 open Model.MoveMent
 open Model.Types
-//// ******NEEDS TO BE IMPLEMENTED******* //
+
 //// ##################################################
-//// # Performs VNS on a given Island                 #
+//// # Performs OLS on a given Island                 #
 //// # Returns new Island with new individuals        #
 //// # And a fitness history for the best individual. #
 //// ##################################################
 //
-    module public VariableNeighborhoodSearch =
+    module public OptimisticLocalSearch =
         let rec loop (individual : Individual) fitnesses goal configuration i operator numIterationsWithoutMove =
             //Deconstruct the individual
             let mutable (fitness,board,path) = individual
@@ -29,7 +29,7 @@ open Model.Types
                         |2 -> Move(Up,i)
                         |3 -> Move(Down,i)
                     tmp <- MakeMove board move
-                    let fitness' = FitnessTest.run tmp goal configuration
+                    let fitness' = FitnessTest.run goal tmp configuration
                     match operator with
                     |true ->  if(fitness' < fitness) then
                                 fitness <- fitness'
@@ -43,9 +43,11 @@ open Model.Types
                                 fitness <- fitness'
 
             let (fitness' , _ , _) = individual
+            
             //If solution has been found or maxiteration has been reached, return
             if (fitness = 0.0 || i > maxIterations) then
-                printfn "VariableNeighbourhoodSearch Finished"
+                if (fitness' = 0.0) then printfn "OLS Found a solution"
+                //printfn "VariableNeighbourhoodSearch Finished"
                 (individual,List.append fitnesses [fitness])
             //If a better sollution has been found, continue with that.
             else if fitness <> fitness' then
