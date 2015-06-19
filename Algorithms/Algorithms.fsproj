@@ -55,7 +55,7 @@
     <Compile Include="MuCommaLambda.fs" />
     <Compile Include="MuPlusLambda.fs" />
     <Compile Include="SimulatedAnnealing.fs" />
-    <Compile Include="OptimisticLocalSearch.fs" />
+    <Compile Include="OppertunisticLocalSearch.fs" />
     <None Include="packages.config" />
     <None Include="app.config" />
   </ItemGroup>

@@ -48,9 +48,9 @@ module public MuCommaLambda =
         let (fitness',_,_) = parents'.Head
         let fitnesses' = List.append fitnesses [fitness']
         let population' : Population = 
-            if ((iterations % 1000) = 0) then // Reset if has run for 1000 iterations without solution
-                originalIndividuals , fitnesses'
-            else
+//            if ((iterations % 1000) = 0) then // Reset if has run for 1000 iterations without solution
+//                originalIndividuals , fitnesses'
+//            else
                 (parents',fitnesses')
         
         if (fitness' = 0.0 || iterations > maxIterations) then

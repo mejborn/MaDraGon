@@ -48,7 +48,6 @@
   <Import Project="$(FSharpTargetsPath)" Condition="Exists('$(FSharpTargetsPath)')" />
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
-    <Compile Include="RunSimulation.fs" />
     <Compile Include="MainForm.fs" />
     <None Include="app.config" />
     <Compile Include="DoMutation.fs" />

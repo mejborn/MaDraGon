@@ -9,7 +9,7 @@
     // #               Returns a path               #
     // ##############################################
 
-    let rec run original (path : Path) simulation algorithm configuration numIslands maxMerges =
+    let rec run original (path : Path) simulation algorithm configuration numIslands maxMerges maxIndividualsPerIsland =
         
         // Find two random points in the solution paths and use them as new starting points
         let val1 , val2 = System.Random().Next(0,path.Length-1) , System.Random().Next(0,path.Length-1)
@@ -28,7 +28,7 @@
 
         let world : World = World.CreateWorld solboard solboard' simulation algorithm configuration numIslands
         // Create a new world
-        let world' : World = DoMutation.run world original 0 maxMerges
+        let world' : World = DoMutation.run world original 0 maxMerges maxIndividualsPerIsland
         //Sort the world by path length
         let sortedIslands =
             List.ofSeq(

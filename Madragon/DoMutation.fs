@@ -7,7 +7,7 @@
     open MathNet.Numerics
     open MathNet.Numerics.LinearAlgebra
 
-    let rec run (world : World) goal numMerges maxMerges =
+    let rec run (world : World) goal numMerges maxMerges maxIndividualsPerIsland =
         let world' = 
             List.ofSeq(
                 world
@@ -31,9 +31,9 @@
                     |Algorithm.SimulatedAnnealing -> 
                         //printfn "Running SimulatedAnnealing"
                         SimulatedAnnealing.run island goal
-                    |Algorithm.OptimisticLocalSearch -> 
+                    |Algorithm.OppertunisticLocalSearch -> 
                         //printfn "Running VariableNeighborhoodSearch"
-                        OptimisticLocalSearch.run island goal
+                        OppertunisticLocalSearch.run island goal
                 ))
         
         //printfn ""
@@ -63,9 +63,14 @@
                     |> Seq.map (fun island ->
                         let population , configuration = island
                         let individuals , fitnesses = population
-                        let individuals' = List.append [bestIndividuals.[0]] individuals // Put best individual in front of the sequence
+                        let individuals' = 
+                            List.append bestIndividuals individuals // Put best individual in front of the sequence
+                            |> Seq.sortBy (fun (fitness , board , path) -> fitness, path.Length)
+                            |> Seq.take maxIndividualsPerIsland
+                            |> List.ofSeq
                         let population' = individuals' , fitnesses
                         let island' = population' , configuration
                         island')
+                        
                         |> Seq.take (world.Length)) //We dont want the worlds to grow
-            run world'' goal (numMerges+1) maxMerges
+            run world'' goal (numMerges+1) maxMerges maxIndividualsPerIsland

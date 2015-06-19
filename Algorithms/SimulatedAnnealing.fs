@@ -37,9 +37,10 @@ module public SimulatedAnnealing =
         let mutable temperature' = temperature-temperature*cooling
         let individual' = 
             if ((iterations % 5000) = 0) then // Reset if has run for 1000 iterations without solution
-                let _,board,path'' = originalIndividual
+                printfn "Restarting"
+                let _,board'',path'' = originalIndividual
                 temperature' <- originalTemperature
-                fitness' , board , path''
+                fitness' , board'' , path''
             else
                 (fitness',board',path')
   
@@ -48,13 +49,13 @@ module public SimulatedAnnealing =
             else if (fitness-fitness' = 0.0) then 0.25
             else Constants.E ** ((fitness-fitness')/temperature)
 
-        if (fitness' = 0.0 || iterations > maxIterations) then //Stop the algorithm
+        if ((fitness' = 0.0) || (iterations > maxIterations)) then //Stop the algorithm
             if (fitness' = 0.0) then printfn "SA Found a solution"
             individual' , fitnesses'
         else if(rnd.NextDouble() <= AcceptanceProbability) then //Keep the new individual
             loop individual' fitnesses' goal configuration (iterations + 1) temperature' stuckCounter
         else
-            loop individual fitnesses goal configuration (iterations + 1) temperature' (stuckCounter + 1) //Throw out the new individual
+            loop individual (List.append fitnesses [fitness]) goal configuration (iterations + 1) temperature' (stuckCounter + 1) //Throw out the new individual
 
     let run (island : Island) (goal : Board) =
         let (population : Population , configuration) = island

@@ -14,37 +14,48 @@ type System.Random with
 [<EntryPoint>]
 let main argv = 
     let rnd = System.Random()
+    // #########################################
+    // #        Configuration Options          #
+    // #########################################
     // General Setup
     let numRunsForMean = 100
     let maxMerges = 0
     let N = 5 //Board size
     let k = 25 //Number of shuffles
     let numIslands = 1
+    let maxIterations = 1000000 // Maximum iterations an algorithm can work on an Island
+    
+    // Simulation configuration
+    let maxIndividualsPerIsland = 10
+
+    let simulation = Simulation.Single
+    let algorithm = Algorithm.SimulatedAnnealing
+    let fitTest = FitTest.Hamming
+
+    // Simulation specific configuration
+    // Simulated Annealing
+    let temperature , cooling , lambda = 100.0 , 0.01 , 1.0
+    let saConfig = temperature , cooling , lambda
+    // Mu + Lambdas
+    let mu , lambda' = 1 , 10
+    let mplConfig = mu , lambda'
+    let configuration : Configuration = (maxIterations,fitTest,algorithm,saConfig,mplConfig)
+
+    // #########################################
+    // #           Simulation Logic            #
+    // #########################################
+    
+    // Create world from configuration
     let numbers = (rnd.GetValues(0,2)) |> Seq.take (N * N) |> List.ofSeq
     let board : Board = DenseMatrix.init N N (fun i j -> numbers.[i+j])
 
     let board',moves = ScrambleMap board N k
-    let maxIterations = 10000 // Maximum iterations an algorithm can work on an Island
-    
-    // Simulation configuration
-    let simulation = Simulation.Single
-    let algorithm = Algorithm.MuPlusLambda
-    let fitTest = FitTest.Density
+
     printfn "%A %A" board board'
     printfn "Press a key to start"
     System.Console.ReadLine() |> ignore
     printfn "Starting..."
 
-    // Simulation specific configuration
-    // Simulated Annealing
-    let temperature , cooling , lambda = 0.0 , 0.01 , 1.0
-    let saConfig = temperature , cooling , lambda
-    // Mu + Lambdas
-    let mu , lambda' = 1 , 1
-    let mplConfig = mu , lambda'
-    let configuration : Configuration = (maxIterations,fitTest,algorithm,saConfig,mplConfig)
-
-    // Create world from configuration
     let world : World = World.CreateWorld board board' simulation algorithm configuration numIslands
 
     // Mutate the world(s)
@@ -52,7 +63,7 @@ let main argv =
         List.ofSeq (seq {0..numRunsForMean-1}
                                 |> Seq.map (fun i -> 
                                     printfn "Creating world no. %A" i
-                                    DoMutation.run world board 0 maxMerges))
+                                    DoMutation.run world board 0 maxMerges maxIndividualsPerIsland))
   
     // Go trough worlds, and get means from the fitnesses
     printfn "Outputting data before reduction"
@@ -68,7 +79,7 @@ let main argv =
                     |MuPlusLambda -> "MuPlusLambda"
                     |MuCommaLambda -> "MuCommaLamda"
                     |LocalSearch -> "LocalSearch"
-                    |OptimisticLocalSearch -> "VariableNeighbourhoodSearch"
+                    |OppertunisticLocalSearch -> "OppertunisticLocalSearch"
 
             ignore (System.IO.Directory.CreateDirectory("output/before_reduction/" + algorithmText))
             let file = System.IO.File.AppendText("output/before_reduction/" + algorithmText + "/runno" + i.ToString() + ".txt")

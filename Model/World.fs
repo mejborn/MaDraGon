@@ -46,7 +46,7 @@ module public World =
                                                                 Algorithm.SimulatedAnnealing
                                                             |_ ->
                                                                 printfn "Created an Island with VariableNeighborhoodSearch"  
-                                                                Algorithm.OptimisticLocalSearch
+                                                                Algorithm.OppertunisticLocalSearch
                                                         algorithm') , saConfig , mplConfig)
                                                 configuration'))
         islands

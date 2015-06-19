@@ -2,6 +2,7 @@
 open Model
 open Model.MoveMent
 open Model.Types
+open MathNet.Numerics.Distributions
 
 //// ##################################################
 //// # Performs OLS on a given Island                 #
@@ -9,57 +10,41 @@ open Model.Types
 //// # And a fitness history for the best individual. #
 //// ##################################################
 //
-    module public OptimisticLocalSearch =
+    module public OppertunisticLocalSearch =
         let rec loop (individual : Individual) fitnesses goal configuration i operator numIterationsWithoutMove =
             //Deconstruct the individual
             let mutable (fitness,board,path) = individual
             let (maxIterations,_,_,_,_) = configuration
             let N = board.RowCount
 
-            //Check all neighbours, and select the best
-            let mutable tmp = board
-            let mutable board' = board
-            let mutable move = Move(Left,0)
-            for i in 0..N-1 do
-                for j in 0..3 do
-                    let move' =
-                        match j with
-                        |0 -> Move(Left,i)
-                        |1 -> Move(Right,i)
-                        |2 -> Move(Up,i)
-                        |3 -> Move(Down,i)
-                    tmp <- MakeMove board move
-                    let fitness' = FitnessTest.run goal tmp configuration
-                    match operator with
-                    |true ->  if(fitness' < fitness) then
-                                fitness <- fitness'
-                                board' <- tmp
-                                move <- move'
-                                fitness <- fitness'
-                    |false -> if(fitness' > fitness) then
-                                fitness <- fitness'
-                                board' <- tmp
-                                move <- move'
-                                fitness <- fitness'
+            // Choose a random solution
+            let k = Poisson.Sample(1.0)
+            let (board',tmp) = ScrambleMap board N k
+            let path' = List.append path tmp
+            let fitness' = FitnessTest.run goal board' configuration
+            let fitnesses' = List.append fitnesses [fitness']
+            let individual' = (fitness',board',path')
 
-            let (fitness' , _ , _) = individual
             
             //If solution has been found or maxiteration has been reached, return
-            if (fitness = 0.0 || i > maxIterations) then
+            if (fitness' = 0.0 || i > maxIterations) then
                 if (fitness' = 0.0) then printfn "OLS Found a solution"
                 //printfn "VariableNeighbourhoodSearch Finished"
-                (individual,List.append fitnesses [fitness])
+                (individual',fitnesses')
             //If a better sollution has been found, continue with that.
-            else if fitness <> fitness' then
-                let individual' = fitness,board',List.append path [move]
-                let fitnesses' = List.append fitnesses [fitness]
-                loop individual' fitnesses' goal configuration (i+1) operator 0
-            else if numIterationsWithoutMove < 500 then
-                loop individual fitnesses goal configuration (i+1) (not operator) (numIterationsWithoutMove+1)
+            
+            else if(
+                    match operator with
+                    |true -> fitness' < fitness
+                    |false -> fitness' > fitness) then
+                        loop individual' fitnesses' goal configuration (i+1) operator 0
+
+            else if numIterationsWithoutMove < 1000 then //If we have tried less than 500 moves, keep trying.
+                loop individual (List.append fitnesses [fitness]) goal configuration (i+1) (not operator) (numIterationsWithoutMove+1)
             else
             //Else try going the other way
-                //printfn "Turning around"
-                loop individual fitnesses goal configuration (i+1) (not operator) 0
+                printfn "Turning around"
+                loop individual (List.append fitnesses [fitness]) goal configuration (i+1) (not operator) 0
 
         let run (island : Island) (goal : Board) =
             // Deconstruct the island
