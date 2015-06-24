@@ -23,21 +23,21 @@ let main argv =
     let N = 5 //Board size
     let k = 25 //Number of shuffles
     let numIslands = 1
-    let maxIterations = 1000000 // Maximum iterations an algorithm can work on an Island
+    let maxIterations = 10000 // Maximum iterations an algorithm can work on an Island
     
     // Simulation configuration
     let maxIndividualsPerIsland = 10
 
     let simulation = Simulation.Single
-    let algorithm = Algorithm.SimulatedAnnealing
-    let fitTest = FitTest.Hamming
+    let algorithm = Algorithm.MuPlusLambda
+    let fitTest = FitTest.Density
 
     // Simulation specific configuration
     // Simulated Annealing
     let temperature , cooling , lambda = 100.0 , 0.01 , 1.0
     let saConfig = temperature , cooling , lambda
     // Mu + Lambdas
-    let mu , lambda' = 1 , 10
+    let mu , lambda' = 1 , 5
     let mplConfig = mu , lambda'
     let configuration : Configuration = (maxIterations,fitTest,algorithm,saConfig,mplConfig)
 

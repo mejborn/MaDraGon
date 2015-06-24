@@ -54,7 +54,7 @@ module public MuPlusLambda =
         
         let fitnesses' = List.append fitnesses [fitness']
         let population' : Population = 
-            if ((iterations % 1000) = 0) then // Reset if has run for 1000 iterations without solution
+            if ((iterations % 4000) = 0) then // Reset if has run for 1000 iterations without solution
                 originalIndividuals , fitnesses'
             else
                 (parents',fitnesses')

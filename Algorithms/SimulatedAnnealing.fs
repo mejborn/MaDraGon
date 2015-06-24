@@ -36,12 +36,12 @@ module public SimulatedAnnealing =
         let fitnesses' = List.append fitnesses [fitness']
         let mutable temperature' = temperature-temperature*cooling
         let individual' = 
-            if ((iterations % 5000) = 0) then // Reset if has run for 1000 iterations without solution
-                printfn "Restarting"
-                let _,board'',path'' = originalIndividual
-                temperature' <- originalTemperature
-                fitness' , board'' , path''
-            else
+//            if ((iterations % 5000) = 0) then // Reset if has run for 1000 iterations without solution
+//                printfn "Restarting"
+//                let _,board,path'' = originalIndividual
+//                temperature' <- originalTemperature
+//                fitness' , board , path''
+//            else
                 (fitness',board',path')
   
         let AcceptanceProbability =
